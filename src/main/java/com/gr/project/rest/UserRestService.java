@@ -180,60 +180,78 @@ public class UserRestService {
       * @param request
       */
      private Member performRegistration(RegistrationRequest request) {
+//         User newUser = new User(request.getEmail());
+//         
+//         newUser.setEmail(request.getEmail());
+//         
+//         newUser.setFirstName(request.getFirstName());
+//         newUser.setLastName(request.getLastName());
+//         
+//         newUser.setEnabled(false);
+//         
+//         this.identityManager.add(newUser);
+//         
+//         Password password = new Password(request.getPassword());
+//         
+////         TOTPCredentials totp = new TOTPCredentials();
+////         
+////         totp.setPassword();
+////         
+////         
+////         TimeBasedOTP timeBasedOTP = new TimeBasedOTP();
+////
+////         // let's manually generate a token based on the user secret
+////         String token = timeBasedOTP.generate(request.getPassword());
+////
+////         totp.setToken(token);
+//         
+////         newUser.setAttribute( new Attribute<String>("token", token) );
+//         
+//         this.identityManager.updateCredential(newUser, password);
+//         
+//         SimpleTokenCredential tokenCredentials = new SimpleTokenCredential(UUID.randomUUID().toString());
+//         
+//         // also bound the user with the token
+//         this.identityManager.updateCredential(newUser, tokenCredentials);
+//         
+//         Role userRole = BasicModel.getRole(this.identityManager, "User");
+//
+//         BasicModel.grantRole(this.relationshipManager, newUser, userRole);
+//         
+//         Group userGroup = BasicModel.getGroup(this.identityManager, "Users");
+//         
+//         BasicModel.addToGroup(this.relationshipManager, newUser, userGroup);
+         
+         
+         
          User newUser = new User(request.getEmail());
-         
+
          newUser.setEmail(request.getEmail());
-         
          newUser.setFirstName(request.getFirstName());
          newUser.setLastName(request.getLastName());
-         
-         newUser.setEnabled(false);
-         
-         this.identityManager.add(newUser);
-         
-         Password password = new Password(request.getPassword());
-         
-//         TOTPCredentials totp = new TOTPCredentials();
-//         
-//         totp.setPassword();
-//         
-//         
-//         TimeBasedOTP timeBasedOTP = new TimeBasedOTP();
-//
-//         // let's manually generate a token based on the user secret
-//         String token = timeBasedOTP.generate(request.getPassword());
-//
-//         totp.setToken(token);
-         
-//         newUser.setAttribute( new Attribute<String>("token", token) );
-         
-         this.identityManager.updateCredential(newUser, password);
-         
-         SimpleTokenCredential tokenCredentials = new SimpleTokenCredential(UUID.randomUUID().toString());
-         
-         // also bound the user with the token
-         this.identityManager.updateCredential(newUser, tokenCredentials);
-         
-         Role userRole = BasicModel.getRole(this.identityManager, "User");
+         newUser.setEnabled(false); // by default, user is disabled until the account is activated.
 
-         BasicModel.grantRole(this.relationshipManager, newUser, userRole);
-         
-         Group userGroup = BasicModel.getGroup(this.identityManager, "Users");
-         
-         BasicModel.addToGroup(this.relationshipManager, newUser, userGroup);
-         
-         return memberFromUser(newUser, tokenCredentials);
+         String activationCode = "123456";
+
+         newUser.setAttribute(new Attribute<String>("ActivationCode", activationCode)); // we set an activation code for future use.
+
+         this.identityManager.add(newUser);
+
+         Password password = new Password(request.getPassword());
+
+         this.identityManager.updateCredential(newUser, password);
+
+         return memberFromUser(newUser, activationCode);
      }
      
-     private Member memberFromUser(User newUser, SimpleTokenCredential tokenCredentials) {
+     private Member memberFromUser(User newUser, String activationCode) {
 		Member m = new Member();
 		m.setEmail(newUser.getEmail());
 		m.setFirstName(newUser.getFirstName());
 		m.setId(newUser.getId());
 		m.setLastName(newUser.getLastName());
-		m.setToken(tokenCredentials.getToken());
 		// add some activation code. For simplicity we are setting a random UUID
-		m.setActivationCode(UUID.randomUUID().toString());
+		m.setActivationCode(activationCode);
 		
 		return m;
 	}
