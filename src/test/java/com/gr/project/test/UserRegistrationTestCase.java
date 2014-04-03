@@ -98,6 +98,12 @@ public class UserRegistrationTestCase {
         this.identityManager.validateCredentials(tokenCredential);
 
         assertEquals(Credentials.Status.VALID, tokenCredential.getStatus());
+
+        TokenCredential invalidCredential = new TokenCredential("invalid");
+
+        this.identityManager.validateCredentials(invalidCredential);
+
+        assertEquals(Credentials.Status.INVALID, invalidCredential.getStatus());
     }
 
     private String activateAccount(String activationCode) {
