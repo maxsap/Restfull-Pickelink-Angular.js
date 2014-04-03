@@ -140,7 +140,7 @@
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-idm-impl</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink</groupId>

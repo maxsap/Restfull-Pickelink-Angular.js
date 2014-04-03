@@ -19,7 +19,7 @@
 			source, this example data source is just for development and testing! -->
 		<!-- The datasource is deployed as WEB-INF/kitchensink-quickstart-ds.xml, 
 			you can find it in the source at src/main/webapp/WEB-INF/kitchensink-quickstart-ds.xml -->
-		<jta-data-source>java:jboss/MySQLDS</jta-data-source>
+		<jta-data-source>java:jboss/datasources/ExampleDS</jta-data-source>
 		
 		<!-- All those entity classes are provided by the picketlink-idm-schema module. -->
 		<class>org.picketlink.idm.jpa.model.sample.simple.AttributedTypeEntity</class>
