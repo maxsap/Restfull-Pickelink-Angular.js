@@ -14,19 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gr.project.security;
+package com.gr.project.security.credential;
 
 import org.picketlink.idm.credential.AbstractBaseCredentials;
+import org.picketlink.idm.model.Account;
 
 /**
  * <p>A simple credential that uses a token as a credential.</p>
  */
-public class SimpleTokenCredential extends AbstractBaseCredentials {
+public class TokenCredential extends AbstractBaseCredentials {
 
-    private String token;
+    private String loginName;
+    private Token token;
 
-    public SimpleTokenCredential(String token) {
-        this.token = token;
+    public TokenCredential() {
+        this(null);
+    }
+
+    public TokenCredential(String id) {
+        this.token = new Token(id);
     }
 
     @Override
@@ -34,7 +40,19 @@ public class SimpleTokenCredential extends AbstractBaseCredentials {
         this.token = null;
     }
 
-    public String getToken() {
+    public String getLoginName() {
+        return this.loginName;
+    }
+
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
+    }
+
+    public Token getToken() {
         return this.token;
+    }
+
+    public void setToken(Token token) {
+        this.token = token;
     }
 }

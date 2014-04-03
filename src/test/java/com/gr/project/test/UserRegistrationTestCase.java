@@ -21,12 +21,16 @@
  */
 package com.gr.project.test;
 
+import com.gr.project.security.credential.Token;
+import com.gr.project.security.credential.TokenCredential;
+import com.gr.project.security.credential.TokenCredentialHandler;
 import com.gr.project.security.rest.RegistrationRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.config.IdentityConfigurationBuilder;
+import org.picketlink.idm.credential.Credentials;
 import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.internal.DefaultPartitionManager;
 import org.picketlink.idm.model.Attribute;
@@ -37,7 +41,9 @@ import org.picketlink.idm.model.basic.User;
 import org.picketlink.idm.query.IdentityQuery;
 
 import java.util.List;
+import java.util.UUID;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -75,16 +81,26 @@ public class UserRegistrationTestCase {
         assertNotNull(disabledAccount);
         assertFalse(disabledAccount.isEnabled());
 
-        activateAccount(activationCode);
+        String token = activateAccount(activationCode);
+
+        assertNotNull(token);
 
         User enabledAccount = BasicModel.getUser(this.identityManager, request.getEmail());
 
-        // make sure the account was properly created and disabled
+        // make sure the account was properly created and enabled
         assertNotNull(enabledAccount);
         assertTrue(enabledAccount.isEnabled());
+
+        TokenCredential tokenCredential = new TokenCredential(token);
+
+        tokenCredential.setLoginName(enabledAccount.getLoginName());
+
+        this.identityManager.validateCredentials(tokenCredential);
+
+        assertEquals(Credentials.Status.VALID, tokenCredential.getStatus());
     }
 
-    private void activateAccount(String activationCode) {
+    private String activateAccount(String activationCode) {
         IdentityQuery<User> query = this.identityManager.createIdentityQuery(User.class);
 
         List<User> result = query
@@ -99,6 +115,13 @@ public class UserRegistrationTestCase {
         user.setEnabled(true);
 
         this.identityManager.update(user);
+
+        String tokenId = UUID.randomUUID().toString();
+        Token token = new Token(tokenId);
+
+        this.identityManager.updateCredential(user, token);
+
+        return tokenId;
     }
 
     private String createAccount(RegistrationRequest request) {
@@ -140,6 +163,7 @@ public class UserRegistrationTestCase {
             .named("test.config")
                 .stores()
                     .file()
+                        .addCredentialHandler(TokenCredentialHandler.class)
                         .preserveState(false) // we always reset data during tests.
                         .supportAllFeatures();
 

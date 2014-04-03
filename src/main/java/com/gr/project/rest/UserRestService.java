@@ -22,14 +22,13 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.gr.project.security.credential.TokenCredential;
 import org.picketlink.Identity;
 import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.credential.TOTPCredentials;
-import org.picketlink.idm.credential.util.TimeBasedOTP;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.Attribute;
 import org.picketlink.idm.model.basic.BasicModel;
@@ -40,7 +39,6 @@ import org.picketlink.idm.model.basic.User;
 import com.gr.project.data.MemberDAO;
 import com.gr.project.model.Email;
 import com.gr.project.model.Member;
-import com.gr.project.security.SimpleTokenCredential;
 import com.gr.project.security.UserLoggedIn;
 import com.gr.project.security.rest.LoginService;
 import com.gr.project.security.rest.RegistrationRequest;
@@ -210,7 +208,7 @@ public class UserRestService {
          
          this.identityManager.updateCredential(newUser, password);
          
-         SimpleTokenCredential tokenCredentials = new SimpleTokenCredential(UUID.randomUUID().toString());
+         TokenCredential tokenCredentials = new TokenCredential(UUID.randomUUID().toString());
          
          // also bound the user with the token
          this.identityManager.updateCredential(newUser, tokenCredentials);
