@@ -157,10 +157,10 @@ public class UserRestService {
                      // if the registration was successful, we perform a silent authentication.
                      performSilentAuthentication(request);
                      
-//                     Email email = new Email("Successfull Subscription", "Success registration", "max.sapranidis@gmail.com");
-//         			 event.fire(email);
+                     Email email = new Email(member.getActivationCode(), "Please complete the signup", member.getEmail());
+         			 event.fire(email);
                      
-                     return Response.status(Response.Status.OK).entity(member).type(MediaType.APPLICATION_JSON_TYPE).build();
+                     return Response.status(Response.Status.OK).entity(member.getToken()).type(MediaType.APPLICATION_JSON_TYPE).build();
                  } else {
                      response.put(MESSAGE_RESPONSE_PARAMETER, "This username is already in use. Try another one.");
                  }
@@ -183,12 +183,11 @@ public class UserRestService {
          User newUser = new User(request.getEmail());
          
          newUser.setEmail(request.getEmail());
-
+         
          newUser.setFirstName(request.getFirstName());
          newUser.setLastName(request.getLastName());
          
-         newUser.setAttribute( new Attribute<String>("Status", "Disabled") );
-         
+         newUser.setEnabled(false);
          
          this.identityManager.add(newUser);
          
@@ -223,15 +222,17 @@ public class UserRestService {
          
          BasicModel.addToGroup(this.relationshipManager, newUser, userGroup);
          
-         return memberFromUser(newUser);
+         return memberFromUser(newUser, tokenCredentials);
      }
      
-     private Member memberFromUser(User newUser) {
+     private Member memberFromUser(User newUser, SimpleTokenCredential tokenCredentials) {
 		Member m = new Member();
 		m.setEmail(newUser.getEmail());
 		m.setFirstName(newUser.getFirstName());
 		m.setId(newUser.getId());
 		m.setLastName(newUser.getLastName());
+		m.setToken(tokenCredentials.getToken());
+		// add some activation code. For simplicity we are setting a random UUID
 		m.setActivationCode(UUID.randomUUID().toString());
 		
 		return m;

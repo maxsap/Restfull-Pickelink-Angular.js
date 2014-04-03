@@ -47,6 +47,6 @@ public class AuthenticatorSelector {
     }
 	
 	private boolean isCustomCredential() {
-        return TOTPCredentials.class.equals(credentials.getCredential().getClass());
+        return SimpleTokenCredential.class.equals(credentials.getCredential().getClass());
     }
 }

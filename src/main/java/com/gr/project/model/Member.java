@@ -48,6 +48,8 @@ public class Member implements Serializable {
     private String email;
     
     private String activationCode;
+    
+    private String token;
 
 	/**
 	 * @return the id
@@ -119,4 +121,18 @@ public class Member implements Serializable {
 		this.activationCode = activationCode;
 	}
 
+	/**
+	 * @return the token
+	 */
+	public String getToken() {
+		return token;
+	}
+
+	/**
+	 * @param token the token to set
+	 */
+	public void setToken(String token) {
+		this.token = token;
+	}
+	
 }

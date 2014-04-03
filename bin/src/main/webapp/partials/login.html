@@ -1,0 +1,36 @@
+<div class="well" check-user>
+    <h2>Please Login</h2>
+
+    <form class="form-horizontal"  ng-submit="dologin(loginForm.info)">
+        <input type="hidden" ng-model="loginForm.info.clientId" />
+        <div class="control-group">
+            <label class="control-label" for="userId">Email</label>
+            <div class="controls">
+                <input type="email" id="userId" name="userId" ng-model="loginForm.info.userId"  placeholder="myname@myemail.com"
+                       required
+                       class="span4 ng-pristine ng-valid ng-valid-required"
+                       ng-minlength="5"
+                       ng-pattern="/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <label class="control-label" for="password">Password</label>
+            <div class="controls">
+                <input id="password" type="password" name="password" ng-model="loginForm.info.password"
+                       required
+                       class="span4 ng-pristine ng-valid ng-valid-required"
+                       ng-minlength="3"/>
+            </div>
+        </div>
+        <div class="control-group">
+            <div class="controls">
+                <label class="checkbox">
+                    <input type="checkbox"> Remember me
+                </label>
+                <button type="submit" class="btn">Sign in</button>
+                <span>or</span>
+                <button ng-click="redirectoToSignUp()" class="btn">Sign up</button>
+            </div>
+        </div>
+    </form>
+</div>
