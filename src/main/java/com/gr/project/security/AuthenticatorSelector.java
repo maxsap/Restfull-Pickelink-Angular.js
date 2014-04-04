@@ -25,9 +25,9 @@ public class AuthenticatorSelector {
 	@Inject
     private DefaultLoginCredentials credentials;
 
-	@PicketLink
-    @Produces
-    @RequestScoped
+//	@PicketLink
+//    @Produces
+//    @RequestScoped
     public Authenticator chooseAuthenticator() {
 //        HttpServletRequest httpServletRequest = (HttpServletRequest) ThreadLocalUtils.currentRequest.get();
 //        HttpServletResponse httpServletResponse = (HttpServletResponse) ThreadLocalUtils.currentResponse.get();

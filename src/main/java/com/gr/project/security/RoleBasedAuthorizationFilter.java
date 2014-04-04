@@ -38,10 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.picketlink.Identity;
-import org.picketlink.idm.credential.TOTPCredentials;
 
-import com.gr.project.security.credential.TokenCredential;
-import com.gr.project.security.rest.LoginService;
 import com.gr.project.util.ThreadLocalUtils;
 
 /**
@@ -64,9 +61,6 @@ public class RoleBasedAuthorizationFilter implements Filter {
     @Inject
     private AuthorizationManager authorizationManager;
     
-    @Inject
-    private LoginService loginService;
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // to configure which resources should be protected, see the AuthorizationManager class.
@@ -79,21 +73,8 @@ public class RoleBasedAuthorizationFilter implements Filter {
         
         
         try {
-        	// used to "Inject" the request and the response globally for the app. Also will be needed for social login
         	ThreadLocalUtils.currentRequest.set(httpRequest);
             ThreadLocalUtils.currentResponse.set(httpResponse);
-            
-            /*
-             * Intercept all calls that include x-session-token,
-             * If the call is not already authenticated then try to authenticate.
-             */
-            if(httpRequest.getHeader("x-session-token") != null) {
-            	if(!getIdentity().isLoggedIn()) {
-	            	TokenCredential credential = new TokenCredential(httpRequest.getHeader("x-session-token"));
-	            	
-	                this.loginService.loginWithToken(credential);
-            	}
-            }
             
             if (this.authorizationManager.isAllowed(httpRequest)) {
                 performAuthorizedRequest(chain, httpRequest, httpResponse);                

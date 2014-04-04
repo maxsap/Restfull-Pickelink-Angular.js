@@ -1,19 +1,14 @@
 package com.gr.project.rest;
 
-import static org.junit.Assert.assertFalse;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,21 +19,12 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.gr.project.security.credential.Token;
-import com.gr.project.security.credential.TokenCredential;
-
-import org.picketlink.Identity;
-import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.Attribute;
 import org.picketlink.idm.model.IdentityType;
 import org.picketlink.idm.model.basic.BasicModel;
-import org.picketlink.idm.model.basic.Group;
-import org.picketlink.idm.model.basic.Role;
 import org.picketlink.idm.model.basic.User;
 import org.picketlink.idm.query.IdentityQuery;
 
@@ -46,44 +32,25 @@ import com.gr.project.data.MemberDAO;
 import com.gr.project.model.Email;
 import com.gr.project.model.Member;
 import com.gr.project.security.UserLoggedIn;
-import com.gr.project.security.rest.LoginService;
+import com.gr.project.security.credential.Token;
 import com.gr.project.security.rest.RegistrationRequest;
 import com.gr.project.service.Registrator;
-import com.gr.project.util.EntityValidator;
 
 
 @Path("/users")
 @Stateless
 public class UserRestService {
 	
-     private static final String MESSAGE_RESPONSE_PARAMETER = "message";
+     public static final String MESSAGE_RESPONSE_PARAMETER = "message";
     
-     @Inject
-     private Logger log;
-
      @Inject
      private MemberDAO repository;
 
-     @Inject
-     private EntityValidator validator;
-     
      @Inject
      Registrator registration;
      
      @Inject
      private IdentityManager identityManager;
-     
-     @Inject
-     private Identity identity;
-
-     @Inject
-     private RelationshipManager relationshipManager;
-
-     @Inject
-     private LoginService loginService;
-     
-     @Inject
-     private EntityManager em;
      
      @Inject
  	 @Any
@@ -109,43 +76,11 @@ public class UserRestService {
      }
      
      @POST
-     @Path("/login")
-     @Produces(MediaType.APPLICATION_JSON)
-     public Response loginUser(@NotNull DefaultLoginCredentials credential) {
-    	 
-    	 Map<String, Object> response = new HashMap<String, Object>();
-    	 
-    	 try {
-	    	 if (!this.identity.isLoggedIn()) {
-	             this.loginService.login(credential);
-	         }
-	
-	         Account account = this.identity.getAccount();
-	
-	         if (account == null) {
-	        	 log.log(Level.WARNING, "Authentication account is empty");
-	        	 response.put(MESSAGE_RESPONSE_PARAMETER, "User Not Found.");
-	         } else {
-	        	 return Response.ok().entity(account).type(MediaType.APPLICATION_JSON_TYPE).build();
-	         }
-	         
-    	 } catch(Exception ex) {
-    		 response.put(MESSAGE_RESPONSE_PARAMETER, "Oops ! Authentication failed, try it later.");
-    	 }
-    	 
-    	 return Response.status(Response.Status.FORBIDDEN).entity(response).type(MediaType.APPLICATION_JSON_TYPE).build();
-     }
-
-
-     
-     @POST
      @Produces(MediaType.APPLICATION_JSON)
      public Response createMember(@NotNull RegistrationRequest request) {
     	 
     	 Map<String, Object> response = new HashMap<String, Object>();
     	 
-//    	 Member member = null;
-         
          if (!request.getPassword().equals(request.getPasswordConfirmation())) {
              response.put(MESSAGE_RESPONSE_PARAMETER, "Password mismatch.");
          } else {
@@ -224,27 +159,6 @@ public class UserRestService {
          this.identityManager.updateCredential(newUser, password);
 
          return activationCode;
-     }
-     
-     private Member memberFromUser(User newUser, String activationCode) {
-		Member m = new Member();
-		m.setEmail(newUser.getEmail());
-		m.setFirstName(newUser.getFirstName());
-		m.setId(newUser.getId());
-		m.setLastName(newUser.getLastName());
-		// add some activation code. For simplicity we are setting a random UUID
-		m.setActivationCode(activationCode);
-		
-		return m;
-	}
-
-	private void performSilentAuthentication(RegistrationRequest request) {
-         DefaultLoginCredentials authenticationRequest = new DefaultLoginCredentials();
-         
-         authenticationRequest.setUserId(request.getEmail());
-         authenticationRequest.setPassword(request.getPassword());
-
-         this.loginService.login(authenticationRequest);
      }
 
  }
