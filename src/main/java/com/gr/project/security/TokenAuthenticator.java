@@ -26,8 +26,8 @@ public class TokenAuthenticator extends BaseAuthenticator {
     
     @Inject IdentityManager identityManager;
     
-	@PicketLink
-	@Override
+//	@PicketLink
+//	@Override
     public void authenticate() {
         if (this.credentials.getCredential() == null) {
         	return;
