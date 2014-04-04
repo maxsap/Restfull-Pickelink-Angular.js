@@ -25,12 +25,17 @@ package com.gr.project.security;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.RelationshipManager;
+import org.picketlink.idm.config.IdentityConfigurationBuilder;
 import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.internal.DefaultPartitionManager;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
+import org.picketlink.idm.model.basic.Realm;
 import org.picketlink.idm.model.basic.Role;
 import org.picketlink.idm.model.basic.User;
 import org.picketlink.idm.query.IdentityQuery;
+
+import com.gr.project.security.credential.TokenCredentialHandler;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
@@ -49,12 +54,16 @@ import javax.inject.Inject;
 @Startup
 public class IdentityManagementInitializer {
 
-    @Inject
     private PartitionManager partitionManager;
+    private IdentityManager identityManager;
 
     @PostConstruct
     public void initialize() {
-        IdentityManager identityManager = this.partitionManager.createIdentityManager();
+    	this.partitionManager = createPartitionManager();
+
+        this.partitionManager.add(new Realm(Realm.DEFAULT_REALM)); // we need a single partition, so let's create a default.
+
+        this.identityManager = this.partitionManager.createIdentityManager();
         
         
         IdentityQuery<User> query = identityManager.createIdentityQuery(User.class);
@@ -109,6 +118,21 @@ public class IdentityManagementInitializer {
              identityManager.add(usersGroup);
         	
         }
+    }
+    
+    
+    private PartitionManager createPartitionManager() {
+        IdentityConfigurationBuilder builder = new IdentityConfigurationBuilder();
+
+        builder
+            .named("test.config")
+                .stores()
+                    .file()
+                        .addCredentialHandler(TokenCredentialHandler.class)
+                        .preserveState(false) // we always reset data during tests.
+                        .supportAllFeatures();
+
+        return new DefaultPartitionManager(builder.buildAll());
     }
 
 }

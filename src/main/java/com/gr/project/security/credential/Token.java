@@ -19,51 +19,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-
-package com.gr.project.security.rest;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
-import org.picketlink.Identity;
-import org.picketlink.credential.DefaultLoginCredentials;
-
-import com.gr.project.security.credential.TokenCredential;
-import static org.picketlink.Identity.Stateless;
+package com.gr.project.security.credential;
 
 /**
+ * <p>This class represents the concept of a token. For now we're using a String-based token.</p>
  *
+ * <p>The reason why we have a specific type is to support future changes to the token structure, so we can
+ * store more data related with it.</p>
+ *
+ * @author Pedro Igor
  */
-@RequestScoped
-public class LoginService {
+public class Token {
 
-    @Inject
-    @Stateless
-    private Identity identity;
+    private String id;
 
-    @Inject
-    private DefaultLoginCredentials credentials;
-
-    public void login(DefaultLoginCredentials credential) {
-        if (!this.identity.isLoggedIn()) {
-
-            this.credentials.setUserId(credential.getUserId());
-            this.credentials.setPassword(credential.getPassword());
-
-            this.identity.login();
-        }
-
+    public Token() {
+        this(null);
     }
-    
-    
-    public void loginWithToken(TokenCredential credential) {
-        if (!this.identity.isLoggedIn()) {
 
-            this.credentials.setCredential(credential);
-
-            this.identity.login();
-        }
-
+    public Token(String id) {
+        this.id = id;
     }
-    
+
+    public String getId() {
+        return this.id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

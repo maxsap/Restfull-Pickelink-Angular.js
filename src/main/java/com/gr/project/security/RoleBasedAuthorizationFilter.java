@@ -40,6 +40,7 @@ import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.picketlink.Identity;
 import org.picketlink.idm.credential.TOTPCredentials;
 
+import com.gr.project.security.credential.TokenCredential;
 import com.gr.project.security.rest.LoginService;
 import com.gr.project.util.ThreadLocalUtils;
 
@@ -76,8 +77,6 @@ public class RoleBasedAuthorizationFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         
-        String publicToken = "6a79efce-995f-4db9-bf16-ee6d836a2626";//httpRequest.getParameter("x-authc-token");
-        String appId = "f9083e6f-6ec4-46ea-9fda-b5cf35cc91a6";//httpRequest.getParameter("x-authc-appID");
         
         try {
         	// used to "Inject" the request and the response globally for the app. Also will be needed for social login
@@ -85,19 +84,16 @@ public class RoleBasedAuthorizationFilter implements Filter {
             ThreadLocalUtils.currentResponse.set(httpResponse);
             
             /*
-             * Intercept all calls that include appID and PublicToken,
+             * Intercept all calls that include x-session-token,
              * If the call is not already authenticated then try to authenticate.
              */
-//            if(publicToken != null && appId != null) {
-//            	if(!getIdentity().isLoggedIn()) {
-//	            	TOTPCredentials credential = new TOTPCredentials();
-//	            	
-//	            	credential.setToken(publicToken);
-//	            	credential.setUsername(appId);
-//	            	
-//	                this.loginService.loginWithToken(credential);
-//            	}
-//            }
+            if(httpRequest.getHeader("x-session-token") != null) {
+            	if(!getIdentity().isLoggedIn()) {
+	            	TokenCredential credential = new TokenCredential(httpRequest.getHeader("x-session-token"));
+	            	
+	                this.loginService.loginWithToken(credential);
+            	}
+            }
             
             if (this.authorizationManager.isAllowed(httpRequest)) {
                 performAuthorizedRequest(chain, httpRequest, httpResponse);                
@@ -113,9 +109,6 @@ public class RoleBasedAuthorizationFilter implements Filter {
                 httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } finally{
-//        	if(appId != null) {
-//        		getIdentity().logout();
-//        	}
             ThreadLocalUtils.currentRequest.set(null);
             ThreadLocalUtils.currentResponse.set(null);
         }

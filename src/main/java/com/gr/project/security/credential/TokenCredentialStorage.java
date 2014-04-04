@@ -19,51 +19,24 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package com.gr.project.security.credential;
 
-package com.gr.project.security.rest;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-
-import org.picketlink.Identity;
-import org.picketlink.credential.DefaultLoginCredentials;
-
-import com.gr.project.security.credential.TokenCredential;
-import static org.picketlink.Identity.Stateless;
+import org.picketlink.idm.credential.storage.AbstractCredentialStorage;
+import org.picketlink.idm.credential.storage.annotations.Stored;
 
 /**
- *
+ * @author Pedro Igor
  */
-@RequestScoped
-public class LoginService {
+public class TokenCredentialStorage extends AbstractCredentialStorage {
 
-    @Inject
-    @Stateless
-    private Identity identity;
+    private String id;
 
-    @Inject
-    private DefaultLoginCredentials credentials;
-
-    public void login(DefaultLoginCredentials credential) {
-        if (!this.identity.isLoggedIn()) {
-
-            this.credentials.setUserId(credential.getUserId());
-            this.credentials.setPassword(credential.getPassword());
-
-            this.identity.login();
-        }
-
+    @Stored
+    public String getId() {
+        return this.id;
     }
-    
-    
-    public void loginWithToken(TokenCredential credential) {
-        if (!this.identity.isLoggedIn()) {
 
-            this.credentials.setCredential(credential);
-
-            this.identity.login();
-        }
-
+    public void setId(String id) {
+        this.id = id;
     }
-    
 }

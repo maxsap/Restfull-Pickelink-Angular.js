@@ -11,6 +11,8 @@ import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.credential.Password;
 import org.picketlink.idm.credential.TOTPCredentials;
 
+import com.gr.project.security.credential.TokenCredential;
+
 /*
  * This class will allow us to plug-in more authenticator methods in the future by providing social login.
  */
@@ -23,9 +25,9 @@ public class AuthenticatorSelector {
 	@Inject
     private DefaultLoginCredentials credentials;
 
-//	@PicketLink
-//    @Produces
-//    @RequestScoped
+	@PicketLink
+    @Produces
+    @RequestScoped
     public Authenticator chooseAuthenticator() {
 //        HttpServletRequest httpServletRequest = (HttpServletRequest) ThreadLocalUtils.currentRequest.get();
 //        HttpServletResponse httpServletResponse = (HttpServletResponse) ThreadLocalUtils.currentResponse.get();
@@ -47,6 +49,6 @@ public class AuthenticatorSelector {
     }
 	
 	private boolean isCustomCredential() {
-        return SimpleTokenCredential.class.equals(credentials.getCredential().getClass());
+        return TokenCredential.class.equals(credentials.getCredential().getClass());
     }
 }

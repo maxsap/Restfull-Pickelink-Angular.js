@@ -1,5 +1,7 @@
 package com.gr.project.rest;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,25 +24,27 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.gr.project.security.credential.Token;
+import com.gr.project.security.credential.TokenCredential;
+
 import org.picketlink.Identity;
 import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.credential.TOTPCredentials;
-import org.picketlink.idm.credential.util.TimeBasedOTP;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.Attribute;
+import org.picketlink.idm.model.IdentityType;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Group;
 import org.picketlink.idm.model.basic.Role;
 import org.picketlink.idm.model.basic.User;
+import org.picketlink.idm.query.IdentityQuery;
 
 import com.gr.project.data.MemberDAO;
 import com.gr.project.model.Email;
 import com.gr.project.model.Member;
-import com.gr.project.security.SimpleTokenCredential;
 import com.gr.project.security.UserLoggedIn;
 import com.gr.project.security.rest.LoginService;
 import com.gr.project.security.rest.RegistrationRequest;
@@ -140,7 +144,7 @@ public class UserRestService {
     	 
     	 Map<String, Object> response = new HashMap<String, Object>();
     	 
-    	 Member member = null;
+//    	 Member member = null;
          
          if (!request.getPassword().equals(request.getPasswordConfirmation())) {
              response.put(MESSAGE_RESPONSE_PARAMETER, "Password mismatch.");
@@ -148,82 +152,60 @@ public class UserRestService {
              try {
                  // if there is no user with the provided e-mail, perform registration
                  if (BasicModel.getUser(this.identityManager, request.getEmail()) == null) {
-                	 member = performRegistration(request);
                 	 
-                	 this.validator.validateEntity(member);
-                	 
-                	 em.persist(member);
-
-                     // if the registration was successful, we perform a silent authentication.
-                     performSilentAuthentication(request);
+                	 String activationCode = createAccount(request);
                      
-                     Email email = new Email(member.getActivationCode(), "Please complete the signup", member.getEmail());
+                	 // XXX handle the path better. Also add a view to redirect to in order for the activation to take place!
+                     Email email = new Email("Please complete the signup", "http://localhost:8080/rest/user/activation/"+activationCode, request.getEmail());
          			 event.fire(email);
                      
-                     return Response.status(Response.Status.OK).entity(member.getToken()).type(MediaType.APPLICATION_JSON_TYPE).build();
+                     return Response.status(Response.Status.OK).entity("ok").type(MediaType.APPLICATION_JSON_TYPE).build();
                  } else {
                      response.put(MESSAGE_RESPONSE_PARAMETER, "This username is already in use. Try another one.");
                  }
              } catch (IdentityManagementException ime) {
-            	 if(member != null)
-            		 em.remove(member);
                  response.put(MESSAGE_RESPONSE_PARAMETER, "Oops ! Registration failed, try it later.");
              }
          }
          
          return Response.status(Response.Status.BAD_REQUEST).entity(response).type(MediaType.APPLICATION_JSON_TYPE).build();
      }
-     /**
-      * <p>Performs a registration using the data provided by {@link RegistrationRequest}.</p>
-      * <p>The roles and groups in this method were previously created by the
-      * {@link org.jboss.jdf.example.ticketmonster.security.IdentityManagementInitializer} during startup.</p>
-      * @param request
-      */
-     private Member performRegistration(RegistrationRequest request) {
-//         User newUser = new User(request.getEmail());
-//         
-//         newUser.setEmail(request.getEmail());
-//         
-//         newUser.setFirstName(request.getFirstName());
-//         newUser.setLastName(request.getLastName());
-//         
-//         newUser.setEnabled(false);
-//         
-//         this.identityManager.add(newUser);
-//         
-//         Password password = new Password(request.getPassword());
-//         
-////         TOTPCredentials totp = new TOTPCredentials();
-////         
-////         totp.setPassword();
-////         
-////         
-////         TimeBasedOTP timeBasedOTP = new TimeBasedOTP();
-////
-////         // let's manually generate a token based on the user secret
-////         String token = timeBasedOTP.generate(request.getPassword());
-////
-////         totp.setToken(token);
-//         
-////         newUser.setAttribute( new Attribute<String>("token", token) );
-//         
-//         this.identityManager.updateCredential(newUser, password);
-//         
-//         SimpleTokenCredential tokenCredentials = new SimpleTokenCredential(UUID.randomUUID().toString());
-//         
-//         // also bound the user with the token
-//         this.identityManager.updateCredential(newUser, tokenCredentials);
-//         
-//         Role userRole = BasicModel.getRole(this.identityManager, "User");
-//
-//         BasicModel.grantRole(this.relationshipManager, newUser, userRole);
-//         
-//         Group userGroup = BasicModel.getGroup(this.identityManager, "Users");
-//         
-//         BasicModel.addToGroup(this.relationshipManager, newUser, userGroup);
+     
+     
+     @GET
+     @Path("/activation/{activationCode}")
+     @Produces(MediaType.APPLICATION_JSON)
+     public Response memberActivation(@NotNull @PathParam("activationCode") String activationCode) {
+    	 
+    	 IdentityQuery<User> query = this.identityManager.createIdentityQuery(User.class);
+
+         List<User> result = query
+             .setParameter(IdentityType.QUERY_ATTRIBUTE.byName("ActivationCode"), activationCode)
+             .getResultList();
+
+         if(result == null || result.isEmpty()) {
+        	 return Response.status(Response.Status.BAD_REQUEST).entity("Not Found").type(MediaType.APPLICATION_JSON_TYPE).build();
+         }
          
+         User user = result.get(0);
          
-         
+         if(user.isEnabled()) {
+        	 return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE).build();
+         }
+
+         user.setEnabled(true);
+
+         this.identityManager.update(user);
+
+         String tokenId = UUID.randomUUID().toString();
+         Token token = new Token(tokenId);
+
+         this.identityManager.updateCredential(user, token);
+
+         return Response.status(Response.Status.OK).entity(token).type(MediaType.APPLICATION_JSON_TYPE).build();
+     }
+
+     private String createAccount(RegistrationRequest request) {
          User newUser = new User(request.getEmail());
 
          newUser.setEmail(request.getEmail());
@@ -241,7 +223,7 @@ public class UserRestService {
 
          this.identityManager.updateCredential(newUser, password);
 
-         return memberFromUser(newUser, activationCode);
+         return activationCode;
      }
      
      private Member memberFromUser(User newUser, String activationCode) {

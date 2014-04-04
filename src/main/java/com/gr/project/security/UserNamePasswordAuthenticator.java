@@ -17,10 +17,8 @@
 package com.gr.project.security;
 
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
 
-import org.picketlink.annotations.PicketLink;
 import org.picketlink.authentication.BaseAuthenticator;
 import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManager;
@@ -32,6 +30,7 @@ import org.picketlink.idm.query.IdentityQuery;
 /**
  * <p>A simple authenticator that supports two credential types: username/password or a simple token.</p>
  */
+@RequestScoped
 public class UserNamePasswordAuthenticator extends BaseAuthenticator {
 
     @Inject
@@ -39,9 +38,6 @@ public class UserNamePasswordAuthenticator extends BaseAuthenticator {
     
     @Inject IdentityManager identityManager;
     
-    @PicketLink
-    @Produces
-    @RequestScoped
 	@Override
     public void authenticate() {
         if (this.credentials.getCredential() == null) {
