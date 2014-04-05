@@ -98,7 +98,7 @@ public class SessionService {
 	    		 HttpServletRequest httpRequest = ThreadLocalUtils.currentRequest.get();
 	    		 
 	    		 if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
-	    			 credentials.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
+	    			 credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
 	    			 loginWithToken(credential);
 	    		 } else {
 	    			 login(credential);
