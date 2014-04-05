@@ -24,29 +24,28 @@ package com.gr.project.security;
 
 import static org.picketlink.idm.model.basic.BasicModel.getRole;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+import javax.interceptor.InvocationContext;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.apache.deltaspike.security.api.authorization.Secures;
 import org.picketlink.Identity;
+import org.picketlink.Identity.Stateless;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Role;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.interceptor.InvocationContext;
-import javax.servlet.http.HttpServletRequest;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 /**
  * <p>
@@ -64,7 +63,8 @@ public class AuthorizationManager {
     private Map<String, String[]> roleProtectedResources = new HashMap<String, String[]>();
 
     @Inject
-    private Instance<Identity> identity;
+    @Stateless
+    private Identity identity;
 
     @Inject
     private Instance<IdentityManager> identityManager;
@@ -251,7 +251,7 @@ public class AuthorizationManager {
     }
 
     private Identity getIdentity() {
-        return this.identity.get();
+        return this.identity;
     }
 
 }

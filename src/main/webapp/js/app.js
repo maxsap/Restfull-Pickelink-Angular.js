@@ -36,13 +36,19 @@ var appModule = angular.module('kitchensink',
 		access : {
 		    isFree : true
 		}
+	    }).when('/activate/:activationCode', {
+		templateUrl : 'partials/activate.html',
+		controller : 'ActivationCtrl',
+		access : {
+		    isFree : true
+		}
 	    }).otherwise({
 		redirectTo : 'login'
 	    });
-	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', function($q, $location) {
+	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', function($q, $location, UserService) {
 	    return {
 		'request' : function(config) {
-		    config.headers['x-session-token'] = "120f9c83-6fe3-4e9a-a1df-95b0353ce1db";
+		    config.headers['x-session-token'] = UserService.token;
 		    return config || $q.when(config);
 		},
 

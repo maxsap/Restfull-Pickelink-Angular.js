@@ -24,6 +24,7 @@ package com.gr.project.security.rest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -41,6 +42,7 @@ import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.model.Account;
 
 import com.gr.project.rest.UserRestService;
+import com.gr.project.security.credential.Token;
 import com.gr.project.security.credential.TokenCredential;
 import com.gr.project.util.ThreadLocalUtils;
 
@@ -91,7 +93,7 @@ public class SessionService {
 	    	 if (!this.identity.isLoggedIn()) {
 	    		 HttpServletRequest httpRequest = ThreadLocalUtils.currentRequest.get();
 	    		 
-	    		 if(httpRequest.getHeader("x-session-token") != null) {
+	    		 if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
 	    			 credentials.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
 	    			 loginWithToken(credential);
 	    		 } else {
@@ -104,7 +106,11 @@ public class SessionService {
 	         if (account == null) {
 	        	 response.put(UserRestService.MESSAGE_RESPONSE_PARAMETER, "User Not Found.");
 	         } else {
-	        	 return Response.ok().entity(account).type(MediaType.APPLICATION_JSON_TYPE).build();
+	        	 
+	        	 String tokenId = UUID.randomUUID().toString();
+	             Token token = new Token(tokenId);
+	             
+	        	 return Response.ok().entity(token).type(MediaType.APPLICATION_JSON_TYPE).build();
 	         }
 	         
    	 } catch(Exception ex) {

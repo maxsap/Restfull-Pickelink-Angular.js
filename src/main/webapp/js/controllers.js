@@ -68,8 +68,7 @@ function MembersCtrl($scope, $http, UsersResource, UserService, localStorageServ
 }
 
 
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, UsersResource, $location, $q, localStorageService) {
-    $scope.isLogged = UserService.isLogged;
+function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, localStorageService) {
     
     /**
      * Save a person. Make sure that a person object is present before calling the service.
@@ -77,7 +76,7 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, UsersResourc
     $scope.dologin = function (userData) {
         if (userData.userId != undefined && userData.password != undefined) {
 
-            UsersResource.login(userData, function (u) {
+            SessionResource.login(userData, function (u) {
         	    console.log("Auth");
                     UserService.isLogged = true;
                     UserService.code = u.code;
@@ -123,6 +122,30 @@ function SignupCtrl($scope, $http, UsersResource, UserService, localStorageServi
         });
 
     };
+}
+
+function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
+
+    var ac = $routeParams.activationCode;
+    
+    // Define a register function, which adds the member using the REST service,
+    // and displays any error messages
+    $scope.activate = function() {
+        UsersResource.activation(JSON.stringify(ac), function(data) {
+            console.log(data);
+            UserService.isLogged = true;
+            UserService.token = data.id;
+            $location.path( "/login" );
+        }, function(result) {
+            // if the activation fails for any reason, redirect to login
+            // XXX add check and is the activation fails due to user already active, then redirect to home
+            
+            $location.path( "/login" );
+        });
+
+    };
+    
+    $scope.activate();
 }
 
 

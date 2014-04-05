@@ -91,7 +91,7 @@ public class UserRestService {
                 	 String activationCode = createAccount(request);
                      
                 	 // XXX handle the path better. Also add a view to redirect to in order for the activation to take place!
-                     Email email = new Email("Please complete the signup", "http://localhost:8080/rest/user/activation/"+activationCode, request.getEmail());
+                     Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode, request.getEmail());
          			 event.fire(email);
                      
                      return Response.status(Response.Status.OK).entity("ok").type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -107,15 +107,15 @@ public class UserRestService {
      }
      
      
-     @GET
-     @Path("/activation/{activationCode}")
+     @POST
+     @Path("/activation")
      @Produces(MediaType.APPLICATION_JSON)
-     public Response memberActivation(@NotNull @PathParam("activationCode") String activationCode) {
+     public Response memberActivation(@NotNull String activationCode) {
     	 
     	 IdentityQuery<User> query = this.identityManager.createIdentityQuery(User.class);
 
          List<User> result = query
-             .setParameter(IdentityType.QUERY_ATTRIBUTE.byName("ActivationCode"), activationCode)
+             .setParameter(IdentityType.QUERY_ATTRIBUTE.byName("ActivationCode"), activationCode.replaceAll("\"", ""))
              .getResultList();
 
          if(result == null || result.isEmpty()) {
@@ -148,7 +148,7 @@ public class UserRestService {
          newUser.setLastName(request.getLastName());
          newUser.setEnabled(false); // by default, user is disabled until the account is activated.
 
-         String activationCode = "123456";
+         String activationCode = UUID.randomUUID().toString();
 
          newUser.setAttribute(new Attribute<String>("ActivationCode", activationCode)); // we set an activation code for future use.
 

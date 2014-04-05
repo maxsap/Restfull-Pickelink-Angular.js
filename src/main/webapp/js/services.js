@@ -24,19 +24,20 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 
   return Product;
 }])
-// http://stackoverflow.com/questions/15161349/multiple-routing-urls-for-single-service-angularjs
-//.factory('UsersResource', ['$resource', function ($resource) {
-//    return $resource('rest/users/:dest', {}, {
-//	login: {method: 'POST', params: {dest:"login"}},
-//	token: {method: 'POST', params: {dest:"token"}}
-//    });
-//}])
+.factory('SessionResource', ['$resource', function($resource) {
 
+    return $resource('rest/session/:dest', {}, {
+  	login: {method: 'POST', params: {dest:"login"}},
+  	logout: {method: 'POST', params: {dest:"login"}}
+    });
+
+    return resource;
+  }])
 .factory('UsersResource', ['$resource', function($resource) {
 
   return $resource('rest/users/:dest', {}, {
-	login: {method: 'POST', params: {dest:"login"}},
-	registration: {method: 'POST', params: {dest:"registration"}}
+	registration: {method: 'POST', params: {dest:"registration"}},
+	activation: {method: 'POST', params: {dest:"activation"}}
   });
 
   return resource;
