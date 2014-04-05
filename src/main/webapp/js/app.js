@@ -30,6 +30,12 @@ var appModule = angular.module('kitchensink',
 		access : {
 		    isFree : true
 		}
+	    }).when('/login', {
+		templateUrl : 'partials/login.html',
+		controller : 'LoginCtrl',
+		access : {
+		    isFree : true
+		}
 	    }).when('/signup', {
 		templateUrl : 'partials/signup.html',
 		controller : 'SignupCtrl',

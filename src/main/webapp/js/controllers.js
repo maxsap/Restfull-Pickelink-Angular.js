@@ -135,7 +135,7 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
             console.log(data);
             UserService.isLogged = true;
             UserService.token = data.id;
-            $location.path( "/login" );
+            $location.path( "/home" );
         }, function(result) {
             // if the activation fails for any reason, redirect to login
             // XXX add check and is the activation fails due to user already active, then redirect to home
