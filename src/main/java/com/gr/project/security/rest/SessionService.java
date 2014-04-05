@@ -39,6 +39,7 @@ import javax.ws.rs.core.Response;
 import org.picketlink.Identity;
 import org.picketlink.Identity.Stateless;
 import org.picketlink.credential.DefaultLoginCredentials;
+import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Account;
 
 import com.gr.project.rest.UserRestService;
@@ -56,6 +57,9 @@ public class SessionService {
     @Inject
     @Stateless
     private Identity identity;
+    
+    @Inject
+    private IdentityManager identityManager;
 
     @Inject
     private DefaultLoginCredentials credentials;
@@ -107,8 +111,10 @@ public class SessionService {
 	        	 response.put(UserRestService.MESSAGE_RESPONSE_PARAMETER, "User Not Found.");
 	         } else {
 	        	 
-	        	 String tokenId = UUID.randomUUID().toString();
+	             String tokenId = UUID.randomUUID().toString();
 	             Token token = new Token(tokenId);
+
+	             this.identityManager.updateCredential(account, token);
 	             
 	        	 return Response.ok().entity(token).type(MediaType.APPLICATION_JSON_TYPE).build();
 	         }

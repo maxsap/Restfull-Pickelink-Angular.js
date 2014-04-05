@@ -47,7 +47,7 @@ public class UserRestService {
      private MemberDAO repository;
 
      @Inject
-     Registrator registration;
+     private Registrator registration;
      
      @Inject
      private IdentityManager identityManager;
