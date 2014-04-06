@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.POST;
@@ -42,7 +43,6 @@ import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Account;
 
-import com.gr.project.rest.UserRestService;
 import com.gr.project.security.credential.Token;
 import com.gr.project.security.credential.TokenCredential;
 import com.gr.project.util.ThreadLocalUtils;
@@ -53,6 +53,10 @@ import com.gr.project.util.ThreadLocalUtils;
 @Path("/session")
 @RequestScoped
 public class SessionService {
+	
+	@Inject
+	@Named("default.return.message.parameter")
+	private String MESSAGE_RESPONSE_PARAMETER;
 
     @Inject
     @Stateless
@@ -108,9 +112,11 @@ public class SessionService {
 	         Account account = this.identity.getAccount();
 	
 	         if (account == null) {
-	        	 response.put(UserRestService.MESSAGE_RESPONSE_PARAMETER, "User Not Found.");
+	        	 response.put(MESSAGE_RESPONSE_PARAMETER, "User Not Found.");
 	         } else {
-	        	 
+	        	 // XXX is this going to invalidate the old token or the user is going to have multiple tokens ?
+	        	 // XXX Best would be to update each time, but theoritically is it possible to have one time token, and if yes how to 
+	        	 // query from it from the db?
 	             String tokenId = UUID.randomUUID().toString();
 	             Token token = new Token(tokenId);
 
@@ -120,7 +126,7 @@ public class SessionService {
 	         }
 	         
    	 } catch(Exception ex) {
-   		 response.put(UserRestService.MESSAGE_RESPONSE_PARAMETER, "Oops ! Authentication failed, try it later.");
+   		 response.put(MESSAGE_RESPONSE_PARAMETER, "Oops ! Authentication failed, try it later.");
    	 }
    	 
    	 return Response.status(Response.Status.FORBIDDEN).entity(response).type(MediaType.APPLICATION_JSON_TYPE).build();

@@ -34,6 +34,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.interceptor.InvocationContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -58,9 +59,11 @@ import org.picketlink.idm.model.basic.Role;
 @RequestScoped
 public class AuthorizationManager {
 
-    private static final String ANY_RESOURCE_PATTERN = "*";
-
     private Map<String, String[]> roleProtectedResources = new HashMap<String, String[]>();
+    
+    @Inject
+    @Named("resource.wildcard")
+    private String ANY_RESOURCE_PATTERN;
 
     @Inject
     @Stateless

@@ -9,6 +9,7 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,21 +35,19 @@ import com.gr.project.model.Member;
 import com.gr.project.security.UserLoggedIn;
 import com.gr.project.security.credential.Token;
 import com.gr.project.security.rest.RegistrationRequest;
-import com.gr.project.service.Registrator;
 
 
 @Path("/users")
 @Stateless
 public class UserRestService {
 	
-     public static final String MESSAGE_RESPONSE_PARAMETER = "message";
-    
+	 @Inject
+	 @Named("default.return.message.parameter")
+	 private String MESSAGE_RESPONSE_PARAMETER;
+	
      @Inject
      private MemberDAO repository;
 
-     @Inject
-     private Registrator registration;
-     
      @Inject
      private IdentityManager identityManager;
      
