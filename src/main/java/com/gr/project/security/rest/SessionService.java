@@ -102,8 +102,11 @@ public class SessionService {
 	    		 HttpServletRequest httpRequest = ThreadLocalUtils.currentRequest.get();
 	    		 
 	    		 if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
-	    			 credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
-	    			 loginWithToken(credential);
+	    			 if(httpRequest.getHeader("user-id") != null && !httpRequest.getHeader("user-id").isEmpty()) {
+	    				 credential.setUserId(httpRequest.getHeader("user-id"));
+		    			 credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
+		    			 loginWithToken(credential);
+	    			 }
 	    		 } else {
 	    			 login(credential);
 	    		 }
@@ -117,7 +120,7 @@ public class SessionService {
 	        	 // XXX is this going to invalidate the old token or the user is going to have multiple tokens ?
 	        	 // XXX Best would be to update each time, but theoritically is it possible to have one time token, and if yes how to 
 	        	 // query from it from the db?
-	             String tokenId = UUID.randomUUID().toString();
+	             String tokenId = "12345";
 	             Token token = new Token(tokenId);
 
 	             this.identityManager.updateCredential(account, token);

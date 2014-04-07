@@ -55,6 +55,7 @@ var appModule = angular.module('kitchensink',
 	    return {
 		'request' : function(config) {
 		    config.headers['x-session-token'] = UserService.token;
+		    config.headers['user-id'] = "max.sapranidis@gmail.com";
 		    return config || $q.when(config);
 		},
 

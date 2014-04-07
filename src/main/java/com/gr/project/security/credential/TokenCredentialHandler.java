@@ -61,13 +61,14 @@ public class TokenCredentialHandler<S extends CredentialStore<?>, V extends Toke
         return getAccount(context, credentials.getLoginName());
     }
 
-    @Override
-    protected CredentialStorage getCredentialStorage(IdentityContext context, Account account, TokenCredential credentials, CredentialStore store) {
+    @SuppressWarnings("unchecked")
+	@Override
+    protected CredentialStorage getCredentialStorage(IdentityContext context, Account account, TokenCredential credentials, @SuppressWarnings("rawtypes") CredentialStore store) {
         return store.retrieveCurrentCredential(context, account, TokenCredentialStorage.class);
     }
 
     @Override
-    public void update(IdentityContext context, Account account, Token credential, CredentialStore store, Date effectiveDate, Date expiryDate) {
+    public void update(IdentityContext context, Account account, Token credential, @SuppressWarnings("rawtypes") CredentialStore store, Date effectiveDate, Date expiryDate) {
         TokenCredentialStorage tokenStorage = new TokenCredentialStorage();
 
         tokenStorage.setId(credential.getId());

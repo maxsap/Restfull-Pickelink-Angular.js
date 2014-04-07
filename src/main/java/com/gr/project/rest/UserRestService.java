@@ -131,7 +131,7 @@ public class UserRestService {
 
          this.identityManager.update(user);
 
-         String tokenId = UUID.randomUUID().toString();
+         String tokenId = "12345";
          Token token = new Token(tokenId);
 
          this.identityManager.updateCredential(user, token);
@@ -147,7 +147,7 @@ public class UserRestService {
          newUser.setLastName(request.getLastName());
          newUser.setEnabled(false); // by default, user is disabled until the account is activated.
 
-         String activationCode = UUID.randomUUID().toString();
+         String activationCode = "12345";
 
          newUser.setAttribute(new Attribute<String>("ActivationCode", activationCode)); // we set an activation code for future use.
 
