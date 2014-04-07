@@ -24,7 +24,6 @@ package com.gr.project.security.rest;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

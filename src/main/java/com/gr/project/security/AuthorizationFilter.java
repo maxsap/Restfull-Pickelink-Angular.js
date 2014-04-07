@@ -24,7 +24,6 @@ package com.gr.project.security;
 
 import java.io.IOException;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,9 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.picketlink.Identity;
 import org.picketlink.Identity.Stateless;
-import org.picketlink.credential.DefaultLoginCredentials;
 
-import com.gr.project.security.credential.TokenCredential;
 import com.gr.project.util.ThreadLocalUtils;
 
 /**
@@ -56,15 +53,12 @@ import com.gr.project.util.ThreadLocalUtils;
  * 
  */
 @WebFilter(urlPatterns = "/*")
-public class RoleBasedAuthorizationFilter implements Filter {
+public class AuthorizationFilter implements Filter {
 
     @Inject
     @Stateless
     private Identity identity;
     
-    @Inject
-    private DefaultLoginCredentials credentials;
-
     @Inject
     private AuthorizationManager authorizationManager;
     
@@ -82,20 +76,6 @@ public class RoleBasedAuthorizationFilter implements Filter {
         try {
         	ThreadLocalUtils.currentRequest.set(httpRequest);
             ThreadLocalUtils.currentResponse.set(httpResponse);
-            
-            if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
-	   			 if(httpRequest.getHeader("user-id") != null && !httpRequest.getHeader("user-id").isEmpty()) {
-	   				
-	   				DefaultLoginCredentials credential = new DefaultLoginCredentials();
-	   				credential.setUserId(httpRequest.getHeader("user-id"));
-		    	    credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
-	
-		    	    if (!this.identity.isLoggedIn()) {
-					        this.credentials.setCredential(credential);
-					        this.identity.login();
-				    }
-	   			 }
-            }
             
             if (this.authorizationManager.isAllowed(httpRequest)) {
                 performAuthorizedRequest(chain, httpRequest, httpResponse);                

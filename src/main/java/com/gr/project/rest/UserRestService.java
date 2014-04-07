@@ -3,7 +3,6 @@ package com.gr.project.rest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;

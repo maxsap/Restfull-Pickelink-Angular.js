@@ -42,11 +42,15 @@ import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.apache.deltaspike.security.api.authorization.Secures;
 import org.picketlink.Identity;
 import org.picketlink.Identity.Stateless;
+import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Role;
+
+import com.gr.project.security.credential.TokenCredential;
+import com.gr.project.util.ThreadLocalUtils;
 
 /**
  * <p>
@@ -68,6 +72,9 @@ public class AuthorizationManager {
     @Inject
     @Stateless
     private Identity identity;
+    
+    @Inject
+    private DefaultLoginCredentials credentials;
 
     @Inject
     private Instance<IdentityManager> identityManager;
@@ -93,11 +100,32 @@ public class AuthorizationManager {
     @Secures
     @UserLoggedIn
     public boolean isUserLoggedIn(Identity identity) {
-    	// if user not enabled yet
-//    	if(identity.getAccount() != null && identity.getAccount().getAttribute("Status").getValue().equals("Disabled")) {
-//    		throw new IllegalStateException("The specified Account is not enabled yet.");
-//    	}
-        return identity.isLoggedIn();
+    	
+    	if (this.identity.isLoggedIn()) {
+	        return true;
+	    } else {
+	    	try {
+		    	HttpServletRequest httpRequest = ThreadLocalUtils.currentRequest.get();
+		    	
+		    	if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
+		  			 if(httpRequest.getHeader("user-id") != null && !httpRequest.getHeader("user-id").isEmpty()) {
+		  				
+		  				DefaultLoginCredentials credential = new DefaultLoginCredentials();
+		  				credential.setUserId(httpRequest.getHeader("user-id"));
+			    	    credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
+			    	    
+				        this.credentials.setCredential(credential);
+				        this.identity.login();
+		  			 }
+		       } else {
+		    	   return false;
+		       }
+	    	}catch(Exception ex) {
+	    		return false;
+	    	}
+	    }
+    	
+    	return false;
     }
 
     /**
