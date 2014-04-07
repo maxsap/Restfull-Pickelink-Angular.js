@@ -17,9 +17,10 @@
 	<persistence-unit name="primary">
 		<jta-data-source>java:jboss/datasources/example-ds</jta-data-source>
 
-        <!-- All those entity classes are provided by the picketlink-idm-schema module. -->
+        <class>com.gr.project.model.Person</class>
+
+        <class>com.gr.project.security.model.MyUser</class>
         <class>org.picketlink.idm.jpa.model.sample.simple.AttributedTypeEntity</class>
-		<class>org.picketlink.idm.jpa.model.sample.simple.AccountTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.RoleTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.IdentityTypeEntity</class>

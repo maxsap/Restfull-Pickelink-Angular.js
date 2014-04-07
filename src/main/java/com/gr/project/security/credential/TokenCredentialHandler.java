@@ -21,6 +21,7 @@
  */
 package com.gr.project.security.credential;
 
+import com.gr.project.security.model.MyUser;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.handler.AbstractCredentialHandler;
 import org.picketlink.idm.credential.handler.annotations.SupportsCredentials;
@@ -63,12 +64,12 @@ public class TokenCredentialHandler<S extends CredentialStore<?>, V extends Toke
     @Override
     protected Account getAccount(IdentityContext context, TokenCredential credentials) {
         IdentityManager identityManager = getIdentityManager(context);
-        IdentityQuery<User> query = identityManager.createIdentityQuery(User.class);
+        IdentityQuery<MyUser> query = identityManager.createIdentityQuery(MyUser.class);
         Token token = credentials.getToken();
 
-        query.setParameter(User.ID, token.getUserId());
+        query.setParameter(MyUser.ID, token.getUserId());
 
-        List<User> result = query.getResultList();
+        List<MyUser> result = query.getResultList();
 
         if (!result.isEmpty()) {
             return  result.get(0);

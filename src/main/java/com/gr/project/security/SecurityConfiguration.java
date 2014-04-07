@@ -23,10 +23,10 @@ package com.gr.project.security;
 
 import com.gr.project.security.credential.TokenCredentialHandler;
 import com.gr.project.security.credential.TokenCredentialTypeEntity;
+import com.gr.project.security.model.entity.MyUserTypeEntity;
 import org.picketlink.IdentityConfigurationEvent;
 import org.picketlink.annotations.PicketLink;
 import org.picketlink.idm.config.IdentityConfigurationBuilder;
-import org.picketlink.idm.jpa.model.sample.simple.AccountTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.AttributeTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.IdentityTypeEntity;
@@ -75,7 +75,7 @@ public class SecurityConfiguration {
                             PasswordCredentialTypeEntity.class,
                             TokenCredentialTypeEntity.class,
                             AttributeTypeEntity.class,
-                            AccountTypeEntity.class)
+                            MyUserTypeEntity.class)
                         .addCredentialHandler(TokenCredentialHandler.class)
                         .addContextInitializer(this.contextInitializer)
                         .supportAllFeatures();
