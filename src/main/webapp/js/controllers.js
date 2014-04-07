@@ -134,7 +134,7 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
         UsersResource.activation(JSON.stringify(ac), function(data) {
             console.log(data);
             UserService.isLogged = true;
-            UserService.token = data.id;
+            UserService.token = JSON.stringify(data);
             $location.path( "/home" );
         }, function(result) {
             // if the activation fails for any reason, redirect to login

@@ -22,22 +22,6 @@
 
 package com.gr.project.security;
 
-import static org.picketlink.idm.model.basic.BasicModel.getRole;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.interceptor.InvocationContext;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.apache.deltaspike.security.api.authorization.Secures;
 import org.picketlink.Identity;
@@ -47,6 +31,21 @@ import org.picketlink.idm.RelationshipManager;
 import org.picketlink.idm.model.Account;
 import org.picketlink.idm.model.basic.BasicModel;
 import org.picketlink.idm.model.basic.Role;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Instance;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.interceptor.InvocationContext;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import static org.picketlink.idm.model.basic.BasicModel.getRole;
 
 /**
  * <p>
@@ -87,16 +86,16 @@ public class AuthorizationManager {
      * is called before the annotated method is called.
      * </p>
      * 
-     * @param identity
      * @return
      */
     @Secures
     @UserLoggedIn
-    public boolean isUserLoggedIn(Identity identity) {
+    public boolean isUserLoggedIn() {
     	// if user not enabled yet
 //    	if(identity.getAccount() != null && identity.getAccount().getAttribute("Status").getValue().equals("Disabled")) {
 //    		throw new IllegalStateException("The specified Account is not enabled yet.");
 //    	}
+
         return identity.isLoggedIn();
     }
 
@@ -147,9 +146,7 @@ public class AuthorizationManager {
     }
     
     public boolean isAdmin() {
-        Identity identity = getIdentity();
-
-        if (isUserLoggedIn(identity)) {
+        if (isUserLoggedIn()) {
             IdentityManager identityManager = getIdentityManager();
             RelationshipManager relationshipManager = getRelationshipManager();
 
@@ -165,7 +162,6 @@ public class AuthorizationManager {
      * </p>
      * 
      * @param httpRequest
-     * @throws UserNotLoggedInException If the request requires authentication and the user is not authenticated
      * @throws AccessDeniedException If the request is not allowed considering the resource permissions.
      */
     public boolean isAllowed(HttpServletRequest httpRequest) throws AccessDeniedException {

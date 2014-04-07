@@ -19,45 +19,31 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security.credential;
+package com.gr.project.security;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import com.gr.project.security.credential.TokenCredentialHandler;
+import org.picketlink.IdentityConfigurationEvent;
+import org.picketlink.idm.config.IdentityConfigurationBuilder;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
 
 /**
- * <p>This class represents the concept of a token. For now we're using a String-based token.</p>
- *
- * <p>The reason why we have a specific type is to support future changes to the token structure, so we can
- * store more data related with it.</p>
- *
  * @author Pedro Igor
  */
-@XmlRootElement
-public class Token {
+@ApplicationScoped
+public class IDMConfiguration {
 
-    private String userName;
-    private String id;
+    public void configureIdentityManagement(@Observes IdentityConfigurationEvent event) {
+        IdentityConfigurationBuilder builder = event.getConfig();
 
-    public Token() {
-        this(null);
+        builder
+            .named("test.config")
+            .stores()
+                .file()
+                    .addCredentialHandler(TokenCredentialHandler.class)
+                    .preserveState(false) // we always reset data during tests.
+                    .supportAllFeatures();
     }
 
-    public Token(String id) {
-        this.id = id;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return this.userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
 }

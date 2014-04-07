@@ -1,9 +1,19 @@
 package com.gr.project.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.gr.project.data.MemberDAO;
+import com.gr.project.model.Email;
+import com.gr.project.model.Member;
+import com.gr.project.security.UserLoggedIn;
+import com.gr.project.security.credential.Token;
+import com.gr.project.security.rest.RegistrationRequest;
+import org.picketlink.idm.IdentityManagementException;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.model.Attribute;
+import org.picketlink.idm.model.IdentityType;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.User;
+import org.picketlink.idm.query.IdentityQuery;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -19,22 +29,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.picketlink.idm.IdentityManagementException;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.IdentityType;
-import org.picketlink.idm.model.basic.BasicModel;
-import org.picketlink.idm.model.basic.User;
-import org.picketlink.idm.query.IdentityQuery;
-
-import com.gr.project.data.MemberDAO;
-import com.gr.project.model.Email;
-import com.gr.project.model.Member;
-import com.gr.project.security.UserLoggedIn;
-import com.gr.project.security.credential.Token;
-import com.gr.project.security.rest.RegistrationRequest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 @Path("/users")
@@ -59,7 +58,8 @@ public class UserRestService {
      @Produces(MediaType.APPLICATION_JSON)
      @UserLoggedIn
      public List<Member> listAllMembers() {
-         return repository.findAllOrderedByName();
+         ArrayList<Member> members = new ArrayList<Member>();
+         return members;
      }
 
      @GET
@@ -88,7 +88,7 @@ public class UserRestService {
                  if (BasicModel.getUser(this.identityManager, request.getEmail()) == null) {
                 	 
                 	 String activationCode = createAccount(request);
-                     
+                     System.out.println(activationCode);
                 	 // XXX handle the path better. Also add a view to redirect to in order for the activation to take place!
                      Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode, request.getEmail());
          			 event.fire(email);
@@ -122,10 +122,11 @@ public class UserRestService {
          }
          
          User user = result.get(0);
-         
-         if(user.isEnabled()) {
-        	 return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE).build();
-         }
+         boolean enabled = user.isEnabled();
+
+//         if(enabled) {
+//        	 return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE).build();
+//         }
 
          user.setEnabled(true);
 
@@ -135,6 +136,8 @@ public class UserRestService {
          Token token = new Token(tokenId);
 
          this.identityManager.updateCredential(user, token);
+
+         token.setUserName(user.getLoginName());
 
          return Response.status(Response.Status.OK).entity(token).type(MediaType.APPLICATION_JSON_TYPE).build();
      }
