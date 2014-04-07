@@ -28,6 +28,8 @@ import org.picketlink.idm.jpa.model.sample.simple.AbstractCredentialTypeEntity;
 import javax.persistence.Entity;
 
 /**
+ * <p>{@link javax.persistence.Entity} representing a {@link com.gr.project.security.credential.Token}.</p>
+ *
  * @author Pedro Igor
  */
 @ManagedCredential(TokenCredentialStorage.class)

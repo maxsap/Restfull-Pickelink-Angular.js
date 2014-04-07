@@ -75,9 +75,7 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
      */
     $scope.dologin = function (userData) {
         if (userData.userId != undefined && userData.password != undefined) {
-
-            UserService.username = userId;
-            
+            UserService.username = userData.userId;
             SessionResource.login(userData, function (data) {
         	    console.log("Auth");
         	    UserService.isLogged = true;
