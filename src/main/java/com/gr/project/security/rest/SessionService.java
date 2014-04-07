@@ -79,14 +79,6 @@ public class SessionService {
     }
     
     
-    public void loginWithToken(DefaultLoginCredentials credential) {
-        if (!this.identity.isLoggedIn()) {
-
-            this.credentials.setCredential(credential);
-
-            this.identity.login();
-        }
-    }
     
     
     @POST
@@ -102,15 +94,21 @@ public class SessionService {
 	    		 
 	    		 if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
 	    			 if(httpRequest.getHeader("user-id") != null && !httpRequest.getHeader("user-id").isEmpty()) {
-	    				 credential.setUserId(httpRequest.getHeader("user-id"));
-		    			 credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
-		    			 loginWithToken(credential);
+		    			 
+		    			 TokenCredential tokenCredential = new TokenCredential(httpRequest.getHeader("x-session-token"));
+
+			  		     tokenCredential.setLoginName(httpRequest.getHeader("user-id"));
+			  		        
+					     this.credentials.setCredential(tokenCredential);
+					     
+					     this.identity.login();
+					     
 	    			 }
 	    		 } else {
 	    			 login(credential);
 	    		 }
 	         }
-	
+	    	 
 	         Account account = this.identity.getAccount();
 	
 	         if (account == null) {

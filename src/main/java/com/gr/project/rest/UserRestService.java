@@ -89,7 +89,7 @@ public class UserRestService {
                 	 String activationCode = createAccount(request);
                      
                 	 // XXX handle the path better. Also add a view to redirect to in order for the activation to take place!
-                     Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode, request.getEmail());
+                     Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode + "?username=" + request.getEmail(), request.getEmail());
          			 event.fire(email);
                      
                      return Response.status(Response.Status.OK).entity("ok").type(MediaType.APPLICATION_JSON_TYPE).build();

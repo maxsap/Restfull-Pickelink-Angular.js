@@ -41,6 +41,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
 import org.apache.deltaspike.security.api.authorization.Secures;
 import org.picketlink.Identity;
+import org.picketlink.Identity.AuthenticationResult;
 import org.picketlink.Identity.Stateless;
 import org.picketlink.credential.DefaultLoginCredentials;
 import org.picketlink.idm.IdentityManager;
@@ -110,12 +111,14 @@ public class AuthorizationManager {
 		    	if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
 		  			 if(httpRequest.getHeader("user-id") != null && !httpRequest.getHeader("user-id").isEmpty()) {
 		  				
-		  				DefaultLoginCredentials credential = new DefaultLoginCredentials();
-		  				credential.setUserId(httpRequest.getHeader("user-id"));
-			    	    credential.setCredential(new TokenCredential(httpRequest.getHeader("x-session-token")));
-			    	    
-				        this.credentials.setCredential(credential);
-				        this.identity.login();
+		  				TokenCredential tokenCredential = new TokenCredential(httpRequest.getHeader("x-session-token"));
+
+		  		        tokenCredential.setLoginName(httpRequest.getHeader("user-id"));
+		  		        
+				        this.credentials.setCredential(tokenCredential);
+				        AuthenticationResult result = this.identity.login();
+				        
+				        return result.equals(AuthenticationResult.SUCCESS);
 		  			 }
 		       } else {
 		    	   return false;
