@@ -1,7 +1,5 @@
 package com.gr.project.util;
 
-import org.picketlink.annotations.PicketLink;
-
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.persistence.EntityManager;
@@ -30,16 +28,6 @@ public class Resources {
    @PersistenceContext
    private EntityManager em;
 
-    /**
-     * <p>
-     * Produces a {@link EntityManager} using the qualifier {@link PicketLink} that will be used by the PicketLink IDM.
-     * </p>
-     */
-    @Produces
-    @PicketLink
-    @PersistenceContext(unitName = "primary")
-    private EntityManager picketLinkEntityManager;
-   
    /**
     * Provider injectable loggers based around Java Util Logging.
     * @param injectionPoint

@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-
 
 @Path("/users")
 @Stateless
@@ -90,7 +88,7 @@ public class UserRestService {
                 	 String activationCode = createAccount(request);
                      System.out.println(activationCode);
                 	 // XXX handle the path better. Also add a view to redirect to in order for the activation to take place!
-                     Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode, request.getEmail());
+                     Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode + "?username=" + request.getEmail(), request.getEmail());
          			 event.fire(email);
                      
                      return Response.status(Response.Status.OK).entity("ok").type(MediaType.APPLICATION_JSON_TYPE).build();
@@ -124,20 +122,20 @@ public class UserRestService {
          User user = result.get(0);
          boolean enabled = user.isEnabled();
 
-//         if(enabled) {
-//        	 return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE).build();
-//         }
+         if(enabled) {
+        	 return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE).build();
+         }
 
          user.setEnabled(true);
 
          this.identityManager.update(user);
 
-         String tokenId = UUID.randomUUID().toString();
-         Token token = new Token(tokenId);
+         Token token = new Token();
+
+         token.setId("12345");
+         token.setUserId(user.getId());
 
          this.identityManager.updateCredential(user, token);
-
-         token.setUserName(user.getLoginName());
 
          return Response.status(Response.Status.OK).entity(token).type(MediaType.APPLICATION_JSON_TYPE).build();
      }
@@ -150,7 +148,7 @@ public class UserRestService {
          newUser.setLastName(request.getLastName());
          newUser.setEnabled(false); // by default, user is disabled until the account is activated.
 
-         String activationCode = UUID.randomUUID().toString();
+         String activationCode = "12345";
 
          newUser.setAttribute(new Attribute<String>("ActivationCode", activationCode)); // we set an activation code for future use.
 

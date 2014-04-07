@@ -19,31 +19,42 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security;
+package com.gr.project.security.credential;
 
-import com.gr.project.security.credential.TokenCredentialHandler;
-import org.picketlink.IdentityConfigurationEvent;
-import org.picketlink.idm.config.IdentityConfigurationBuilder;
+import org.picketlink.idm.jpa.annotations.CredentialProperty;
+import org.picketlink.idm.jpa.annotations.entity.ManagedCredential;
+import org.picketlink.idm.jpa.model.sample.simple.AbstractCredentialTypeEntity;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import javax.persistence.Entity;
 
 /**
  * @author Pedro Igor
  */
-@ApplicationScoped
-public class IDMConfiguration {
+@ManagedCredential(TokenCredentialStorage.class)
+@Entity
+public class TokenCredentialTypeEntity extends AbstractCredentialTypeEntity {
 
-    public void configureIdentityManagement(@Observes IdentityConfigurationEvent event) {
-        IdentityConfigurationBuilder builder = event.getConfig();
+    @CredentialProperty(name = "id")
+    private String tokenId;
 
-        builder
-            .named("test.config")
-            .stores()
-                .file()
-                    .addCredentialHandler(TokenCredentialHandler.class)
-                    .preserveState(false) // we always reset data during tests.
-                    .supportAllFeatures();
+    @CredentialProperty
+    private String userId;
+
+    public String getTokenId() {
+        return this.tokenId;
     }
+
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
 
 }

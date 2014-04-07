@@ -22,9 +22,10 @@
 
 package com.gr.project.security;
 
-import java.io.IOException;
+import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import org.picketlink.Identity;
+import org.picketlink.Identity.Stateless;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,11 +36,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
-import org.picketlink.Identity;
-
-import com.gr.project.util.ThreadLocalUtils;
+import java.io.IOException;
 
 /**
  * <p>
@@ -53,11 +50,12 @@ import com.gr.project.util.ThreadLocalUtils;
  * 
  */
 @WebFilter(urlPatterns = "/*")
-public class RoleBasedAuthorizationFilter implements Filter {
+public class AuthorizationFilter implements Filter {
 
     @Inject
-    private Instance<Identity> identity;
-
+    @Stateless
+    private Identity identity;
+    
     @Inject
     private AuthorizationManager authorizationManager;
     
@@ -73,9 +71,6 @@ public class RoleBasedAuthorizationFilter implements Filter {
         
         
         try {
-        	ThreadLocalUtils.currentRequest.set(httpRequest);
-            ThreadLocalUtils.currentResponse.set(httpResponse);
-            
             if (this.authorizationManager.isAllowed(httpRequest)) {
                 performAuthorizedRequest(chain, httpRequest, httpResponse);                
             } else {
@@ -89,9 +84,6 @@ public class RoleBasedAuthorizationFilter implements Filter {
             } else {
                 httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } finally{
-            ThreadLocalUtils.currentRequest.set(null);
-            ThreadLocalUtils.currentResponse.set(null);
         }
     }
 
@@ -101,7 +93,7 @@ public class RoleBasedAuthorizationFilter implements Filter {
     }
 
     private void handleUnauthorizedRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
-        if (!getIdentity().isLoggedIn()) {
+        if (!this.identity.isLoggedIn()) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             handleAccessDeniedError(httpResponse);
@@ -112,12 +104,8 @@ public class RoleBasedAuthorizationFilter implements Filter {
     public void destroy() {
     }
 
-    private Identity getIdentity() {
-        return this.identity.get();
-    }
-
     private void handleAccessDeniedError(HttpServletResponse httpResponse) throws IOException {
-        if (!getIdentity().isLoggedIn()) {
+        if (!this.identity.isLoggedIn()) {
             httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);

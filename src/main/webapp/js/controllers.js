@@ -76,11 +76,12 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
     $scope.dologin = function (userData) {
         if (userData.userId != undefined && userData.password != undefined) {
 
-            SessionResource.login(userData, function (u) {
+            UserService.username = userId;
+            
+            SessionResource.login(userData, function (data) {
         	    console.log("Auth");
-                    UserService.isLogged = true;
-                    UserService.code = u.code;
-                    UserService.state = u.state;
+        	    UserService.isLogged = true;
+                    UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
                     $location.path( "/home" );
                 }, function (err) {
                     console.log(err.data.errorMessage);
@@ -127,6 +128,8 @@ function SignupCtrl($scope, $http, UsersResource, UserService, localStorageServi
 function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
 
     var ac = $routeParams.activationCode;
+    
+    UserService.username = $routeParams.username;
     
     // Define a register function, which adds the member using the REST service,
     // and displays any error messages

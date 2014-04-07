@@ -21,14 +21,18 @@
  */
 package com.gr.project.security.credential;
 
+import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.handler.AbstractCredentialHandler;
 import org.picketlink.idm.credential.handler.annotations.SupportsCredentials;
 import org.picketlink.idm.credential.storage.CredentialStorage;
 import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.basic.User;
+import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.idm.spi.CredentialStore;
 import org.picketlink.idm.spi.IdentityContext;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Pedro Igor
@@ -58,16 +62,29 @@ public class TokenCredentialHandler<S extends CredentialStore<?>, V extends Toke
 
     @Override
     protected Account getAccount(IdentityContext context, TokenCredential credentials) {
-        return getAccount(context, credentials.getLoginName());
+        IdentityManager identityManager = getIdentityManager(context);
+        IdentityQuery<User> query = identityManager.createIdentityQuery(User.class);
+        Token token = credentials.getToken();
+
+        query.setParameter(User.ID, token.getUserId());
+
+        List<User> result = query.getResultList();
+
+        if (!result.isEmpty()) {
+            return  result.get(0);
+        }
+
+        return null;
     }
 
-    @Override
-    protected CredentialStorage getCredentialStorage(IdentityContext context, Account account, TokenCredential credentials, CredentialStore store) {
+    @SuppressWarnings("unchecked")
+	@Override
+    protected CredentialStorage getCredentialStorage(IdentityContext context, Account account, TokenCredential credentials, @SuppressWarnings("rawtypes") CredentialStore store) {
         return store.retrieveCurrentCredential(context, account, TokenCredentialStorage.class);
     }
 
     @Override
-    public void update(IdentityContext context, Account account, Token credential, CredentialStore store, Date effectiveDate, Date expiryDate) {
+    public void update(IdentityContext context, Account account, Token credential, @SuppressWarnings("rawtypes") CredentialStore store, Date effectiveDate, Date expiryDate) {
         TokenCredentialStorage tokenStorage = new TokenCredentialStorage();
 
         tokenStorage.setId(credential.getId());

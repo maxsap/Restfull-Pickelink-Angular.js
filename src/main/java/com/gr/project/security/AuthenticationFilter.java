@@ -22,13 +22,12 @@
 
 package com.gr.project.security;
 
+import com.gr.project.security.credential.Token;
 import com.gr.project.security.credential.TokenCredential;
 import org.picketlink.Identity;
 import org.picketlink.credential.DefaultLoginCredentials;
 
 import javax.inject.Inject;
-import javax.json.Json;
-import javax.json.JsonObject;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -39,18 +38,14 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.StringReader;
+
+import static com.gr.project.security.credential.Token.fromRequest;
 
 /**
- * <p>
- * A RBAC {@link javax.servlet.Filter} that can be used to protected web resources based on a simple role mapping.
- * </p>
- * <p>
- * This filter accepts two params:
- * </p>
+ * <p>This filter is responsible to examine the {@link javax.servlet.http.HttpServletRequest} for a token. The token is used
+ * to create a security context for its owner, the subject.</p>
  *
  * @author Pedro Silva
- *
  */
 @WebFilter(urlPatterns = "/*")
 public class AuthenticationFilter implements Filter {
@@ -73,16 +68,12 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         if (!this.identity.isLoggedIn()) {
-            String token = httpRequest.getHeader("x-session-token");
+            Token token = fromRequest(httpRequest);
 
             if (token != null) {
-                JsonObject tokenObject = Json.createReader(new StringReader(token)).readObject();
-                TokenCredential tokenCredential = new TokenCredential(tokenObject.getString("id"));
-
-                tokenCredential.setLoginName(tokenObject.getString("userName"));
+                TokenCredential tokenCredential = new TokenCredential(token);
 
                 this.credentials.setCredential(tokenCredential);
-
                 this.identity.login();
 
                 if (!this.identity.isLoggedIn()) {
@@ -97,5 +88,4 @@ public class AuthenticationFilter implements Filter {
     @Override
     public void destroy() {
     }
-
 }
