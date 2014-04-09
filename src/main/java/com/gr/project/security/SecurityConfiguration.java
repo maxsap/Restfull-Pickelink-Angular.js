@@ -28,9 +28,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import com.gr.project.security.model.MyUser;
 import org.picketlink.IdentityConfigurationEvent;
 import org.picketlink.annotations.PicketLink;
 import org.picketlink.idm.config.IdentityConfigurationBuilder;
+import org.picketlink.idm.credential.handler.PasswordCredentialHandler;
 import org.picketlink.idm.jpa.model.sample.simple.AttributeTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.IdentityTypeEntity;
@@ -79,6 +81,7 @@ public class SecurityConfiguration {
                             MyUserTypeEntity.class)
                         .addCredentialHandler(TokenCredentialHandler.class)
                         .addContextInitializer(this.contextInitializer)
+                        .setCredentialHandlerProperty(PasswordCredentialHandler.SUPPORTED_ACCOUNT_TYPES_PROPERTY, MyUser.class)
                         .supportAllFeatures();
     }
 

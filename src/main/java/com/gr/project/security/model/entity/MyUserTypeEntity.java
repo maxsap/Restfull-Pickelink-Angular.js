@@ -39,18 +39,18 @@ import javax.persistence.OneToOne;
 public class MyUserTypeEntity extends IdentityTypeEntity {
 
     @AttributeValue
-    private String userName;
+    private String loginName;
 
     @AttributeValue
     @OneToOne (cascade = CascadeType.ALL)
     private Person person;
 
-    public String getUserName() {
-        return this.userName;
+    public String getLoginName() {
+        return this.loginName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 
     public Person getPerson() {

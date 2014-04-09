@@ -35,10 +35,10 @@ public class MyUser extends AbstractIdentityType implements Account {
 
 	private static final long serialVersionUID = 1L;
 
-	public static final QueryParameter USER_NAME = QUERY_ATTRIBUTE.byName("userName");
+	public static final QueryParameter USER_NAME = QUERY_ATTRIBUTE.byName("loginName");
 
     @AttributeProperty
-    private String userName;
+    private String loginName;
 
     @AttributeProperty
     private Person person;
@@ -47,16 +47,16 @@ public class MyUser extends AbstractIdentityType implements Account {
         this(null);
     }
 
-    public MyUser(String userName) {
-        this.userName = userName;
+    public MyUser(String loginName) {
+        this.loginName = loginName;
     }
 
-    public String getUserName() {
-        return this.userName;
+    public String getLoginName() {
+        return this.loginName;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setLoginName(String loginName) {
+        this.loginName = loginName;
     }
 
     public Person getPerson() {
