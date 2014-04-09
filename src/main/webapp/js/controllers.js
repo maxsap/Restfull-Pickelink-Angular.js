@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout) {
+function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout, SessionResource, localStorageService) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -60,6 +60,25 @@ function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $
             $scope.$apply();
         });
 
+    };
+    
+    $scope.clearToken = function() {
+	UserService.token = "";
+	UserService.username = "";
+	
+	// clean up storage
+        localStorageService.remove('token');
+        localStorageService.remove('uid');
+    }
+    
+    
+    $scope.logout = function() {
+	SessionResource.logout(function(resp) {
+	    $scope.clearToken();
+	    $location.path( "/login" );
+	}, function(err) {
+	    console.log(err.data.message);
+	});
     };
 
     // Call the refresh() function, to populate the list of members

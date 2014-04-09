@@ -28,7 +28,7 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 
     return $resource('rest/session/:dest', {}, {
   	login: {method: 'POST', params: {dest:"login"}},
-  	logout: {method: 'POST', params: {dest:"login"}}
+  	logout: {method: 'POST', params: {dest:"logout"}}
     });
 
     return resource;

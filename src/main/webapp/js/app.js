@@ -21,7 +21,7 @@ var appModule = angular.module('PLAngular',
 	[ '$routeProvider', function($routeProvider) {
 	    $routeProvider.when('/home', {
 		templateUrl : 'partials/home.html',
-		controller : MembersCtrl,
+		controller : HomeCtrl,
 		isFree : false
 	    // Add a default route
 	    }).when('/', {
