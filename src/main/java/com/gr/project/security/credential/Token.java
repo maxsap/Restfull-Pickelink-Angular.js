@@ -21,12 +21,15 @@
  */
 package com.gr.project.security.credential;
 
+import org.picketlink.idm.model.Account;
+
 import javax.json.Json;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.StringReader;
+import java.util.UUID;
 
 /**
  * <p>This class represents the concept of a token. For now we're using a String-based token.</p>
@@ -61,6 +64,15 @@ public class Token {
                 reader.close();
             }
         }
+
+        return token;
+    }
+
+    public static Token create(Account account) {
+        Token token = new Token();
+
+        token.setId(UUID.randomUUID().toString());
+        token.setUserId(account.getId());
 
         return token;
     }
