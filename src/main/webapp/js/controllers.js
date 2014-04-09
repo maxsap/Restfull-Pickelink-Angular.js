@@ -73,7 +73,7 @@ function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $
     $scope.orderBy = 'name';
 }
 
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q) {
+function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, localStorageService) {
     
     /**
      * Save a person. Make sure that a person object is present before calling the service.
@@ -89,9 +89,14 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
             UserService.username = userData.userId;
             
             SessionResource.login(userData, function (data) {
-        	    console.log("Auth");
+        	    
         	    UserService.isLogged = true;
                     UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
+                    
+                    // persist token, user id to the storage
+                    localStorageService.add('token', JSON.stringify(data));
+                    localStorageService.add('uid', UserService.username);
+                    
                     $location.path( "/home" );
                 }, function (err) {
                     console.log(err.data.message);
@@ -108,6 +113,10 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
     $scope.clearToken = function() {
 	UserService.token = "";
 	UserService.username = "";
+	
+	// clean up storage
+        localStorageService.remove('token');
+        localStorageService.remove('uid');
     }
 
 }
@@ -149,7 +158,7 @@ function SignupCtrl($scope, $http, UsersResource, UserService, $q, $location, $t
     };
 }
 
-function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout) {
+function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout, localStorageService) {
 
     var ac = $routeParams.activationCode;
     
@@ -159,9 +168,14 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
     // and displays any error messages
     $scope.activate = function() {
         UsersResource.activation(JSON.stringify(ac), function(data) {
-            console.log(data);
+
             UserService.isLogged = true;
             UserService.token = JSON.stringify(data);
+            
+            // persist token, user id to the storage
+            localStorageService.add('token', JSON.stringify(data));
+            localStorageService.add('uid', UserService.username);
+            
             $location.path( "/home" );
         }, function(result) {
             // if the activation fails for any reason, redirect to login

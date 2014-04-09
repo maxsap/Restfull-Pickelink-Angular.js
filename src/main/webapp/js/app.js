@@ -17,7 +17,7 @@
 // Define any routes for the app
 // Note that this app is a single page app, and each partial is routed to using the URL fragment. For example, to select the 'home' route, the URL is http://localhost:8080/jboss-as-kitchensink-angularjs/#/home
 var appModule = angular.module('PLAngular',
-	[ 'productServices' ]).config(
+	[ 'productServices', 'LocalStorageModule']).config(
 	[ '$routeProvider', function($routeProvider) {
 	    $routeProvider.when('/home', {
 		templateUrl : 'partials/home.html',
@@ -51,11 +51,17 @@ var appModule = angular.module('PLAngular',
 	    }).otherwise({
 		redirectTo : 'login'
 	    });
-	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', function($q, $location, UserService) {
+	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', 'localStorageService', function($q, $location, UserService, localStorageService) {
 	    return {
 		'request' : function(config) {
-		    config.headers['x-session-token'] = UserService.token;
-		    config.headers['user-id'] = UserService.username;
+		    var token = localStorageService.get('token');
+		    if(token != null)
+			config.headers['x-session-token'] = token;
+		    
+		    var userId = localStorageService.get('uid');
+		    if(userId != null)
+			config.headers['user-id'] = localStorageService.get('uid');
+		    
 		    return config || $q.when(config);
 		},
 
