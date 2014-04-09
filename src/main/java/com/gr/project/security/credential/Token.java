@@ -21,6 +21,13 @@
  */
 package com.gr.project.security.credential;
 
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonReader;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.StringReader;
+
 /**
  * <p>This class represents the concept of a token. For now we're using a String-based token.</p>
  *
@@ -29,16 +36,33 @@ package com.gr.project.security.credential;
  *
  * @author Pedro Igor
  */
+@XmlRootElement
 public class Token {
 
+    private String userId;
     private String id;
 
-    public Token() {
-        this(null);
-    }
+    public static Token fromRequest(HttpServletRequest request) {
+        Token token = null;
+        String header = request.getHeader("x-session-token");
 
-    public Token(String id) {
-        this.id = id;
+        if (header != null) {
+            JsonReader reader = null;
+
+            try {
+                reader = Json.createReader(new StringReader(header));
+                JsonObject json = reader.readObject();
+
+                token = new Token();
+
+                token.setId(json.getString("id"));
+                token.setUserId(json.getString("userId"));
+            } finally {
+                reader.close();
+            }
+        }
+
+        return token;
     }
 
     public String getId() {
@@ -47,5 +71,13 @@ public class Token {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getUserId() {
+        return this.userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }

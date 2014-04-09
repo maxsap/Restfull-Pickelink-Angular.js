@@ -21,42 +21,42 @@
  */
 package com.gr.project.security.credential;
 
-import org.picketlink.idm.credential.storage.AbstractCredentialStorage;
-import org.picketlink.idm.credential.storage.annotations.Stored;
+import org.picketlink.idm.jpa.annotations.CredentialProperty;
+import org.picketlink.idm.jpa.annotations.entity.ManagedCredential;
+import org.picketlink.idm.jpa.model.sample.simple.AbstractCredentialTypeEntity;
+
+import javax.persistence.Entity;
 
 /**
+ * <p>{@link javax.persistence.Entity} representing a {@link com.gr.project.security.credential.Token}.</p>
+ *
  * @author Pedro Igor
  */
-public class TokenCredentialStorage extends AbstractCredentialStorage {
+@ManagedCredential(TokenCredentialStorage.class)
+@Entity
+public class TokenCredentialTypeEntity extends AbstractCredentialTypeEntity {
 
-    private String id;
+    @CredentialProperty(name = "id")
+    private String tokenId;
+
+    @CredentialProperty
     private String userId;
 
-    @Stored
-    public String getId() {
-        return this.id;
+    public String getTokenId() {
+        return this.tokenId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setTokenId(String tokenId) {
+        this.tokenId = tokenId;
     }
 
-    @Stored
     public String getUserId() {
-        return userId;
+        return this.userId;
     }
 
     public void setUserId(String userId) {
         this.userId = userId;
     }
 
-    public Token getToken() {
-        Token token = new Token();
-
-        token.setId(this.id);
-        token.setUserId(this.userId);
-
-        return token;
-    }
 
 }

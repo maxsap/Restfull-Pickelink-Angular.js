@@ -19,44 +19,55 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security.credential;
+package com.gr.project.model;
 
-import org.picketlink.idm.credential.storage.AbstractCredentialStorage;
-import org.picketlink.idm.credential.storage.annotations.Stored;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 /**
  * @author Pedro Igor
  */
-public class TokenCredentialStorage extends AbstractCredentialStorage {
+@Entity
+public class Person {
 
-    private String id;
-    private String userId;
+    @Id
+    @GeneratedValue
+    private Long id;
 
-    @Stored
-    public String getId() {
+    private String firstName;
+    private String lastName;
+    private String email;
+
+    public Long getId() {
         return this.id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    @Stored
-    public String getUserId() {
-        return userId;
+    public String getFirstName() {
+        return this.firstName;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 
-    public Token getToken() {
-        Token token = new Token();
-
-        token.setId(this.id);
-        token.setUserId(this.userId);
-
-        return token;
+    public String getLastName() {
+        return this.lastName;
     }
 
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

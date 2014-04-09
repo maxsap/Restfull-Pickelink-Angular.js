@@ -19,44 +19,48 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security.credential;
+package com.gr.project.security.model;
 
-import org.picketlink.idm.credential.storage.AbstractCredentialStorage;
-import org.picketlink.idm.credential.storage.annotations.Stored;
+import com.gr.project.model.Person;
+import org.picketlink.idm.model.AbstractIdentityType;
+import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.annotation.AttributeProperty;
+import org.picketlink.idm.query.QueryParameter;
 
 /**
  * @author Pedro Igor
  */
-public class TokenCredentialStorage extends AbstractCredentialStorage {
+public class MyUser extends AbstractIdentityType implements Account {
 
-    private String id;
-    private String userId;
+    public static final QueryParameter USER_NAME = QUERY_ATTRIBUTE.byName("userName");
 
-    @Stored
-    public String getId() {
-        return this.id;
+    @AttributeProperty
+    private String userName;
+
+    @AttributeProperty
+    private Person person;
+
+    public MyUser() {
+        this(null);
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public MyUser(String userName) {
+        this.userName = userName;
     }
 
-    @Stored
-    public String getUserId() {
-        return userId;
+    public String getUserName() {
+        return this.userName;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public Token getToken() {
-        Token token = new Token();
-
-        token.setId(this.id);
-        token.setUserId(this.userId);
-
-        return token;
+    public Person getPerson() {
+        return this.person;
     }
 
+    public void setPerson(Person person) {
+        this.person = person;
+    }
 }

@@ -21,14 +21,19 @@
  */
 package com.gr.project.security.credential;
 
+import com.gr.project.security.model.MyUser;
+import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.handler.AbstractCredentialHandler;
 import org.picketlink.idm.credential.handler.annotations.SupportsCredentials;
 import org.picketlink.idm.credential.storage.CredentialStorage;
 import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.basic.User;
+import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.idm.spi.CredentialStore;
 import org.picketlink.idm.spi.IdentityContext;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Pedro Igor
@@ -58,7 +63,19 @@ public class TokenCredentialHandler<S extends CredentialStore<?>, V extends Toke
 
     @Override
     protected Account getAccount(IdentityContext context, TokenCredential credentials) {
-        return getAccount(context, credentials.getLoginName());
+        IdentityManager identityManager = getIdentityManager(context);
+        IdentityQuery<MyUser> query = identityManager.createIdentityQuery(MyUser.class);
+        Token token = credentials.getToken();
+
+        query.setParameter(MyUser.ID, token.getUserId());
+
+        List<MyUser> result = query.getResultList();
+
+        if (!result.isEmpty()) {
+            return  result.get(0);
+        }
+
+        return null;
     }
 
     @SuppressWarnings("unchecked")

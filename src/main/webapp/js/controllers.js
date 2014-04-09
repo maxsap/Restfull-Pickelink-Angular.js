@@ -75,13 +75,11 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
      */
     $scope.dologin = function (userData) {
         if (userData.userId != undefined && userData.password != undefined) {
-
-            UserService.username = userId;
-            
+            UserService.username = userData.userId;
             SessionResource.login(userData, function (data) {
         	    console.log("Auth");
         	    UserService.isLogged = true;
-                    UserService.token = data.id;
+                    UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
                     $location.path( "/home" );
                 }, function (err) {
                     console.log(err.data.errorMessage);
@@ -137,7 +135,7 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
         UsersResource.activation(JSON.stringify(ac), function(data) {
             console.log(data);
             UserService.isLogged = true;
-            UserService.token = data.id;
+            UserService.token = JSON.stringify(data);
             $location.path( "/home" );
         }, function(result) {
             // if the activation fails for any reason, redirect to login

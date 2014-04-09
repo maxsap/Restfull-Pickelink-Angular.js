@@ -17,35 +17,25 @@
 package com.gr.project.security.credential;
 
 import org.picketlink.idm.credential.AbstractBaseCredentials;
-import org.picketlink.idm.model.Account;
 
 /**
  * <p>A simple credential that uses a token as a credential.</p>
  */
 public class TokenCredential extends AbstractBaseCredentials {
 
-    private String loginName;
     private Token token;
 
     public TokenCredential() {
         this(null);
     }
 
-    public TokenCredential(String id) {
-        this.token = new Token(id);
+    public TokenCredential(Token token) {
+        this.token = token;
     }
 
     @Override
     public void invalidate() {
         this.token = null;
-    }
-
-    public String getLoginName() {
-        return this.loginName;
-    }
-
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
     }
 
     public Token getToken() {

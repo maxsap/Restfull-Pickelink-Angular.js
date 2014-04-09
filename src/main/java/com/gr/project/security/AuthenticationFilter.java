@@ -22,9 +22,10 @@
 
 package com.gr.project.security;
 
-import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import com.gr.project.security.credential.Token;
+import com.gr.project.security.credential.TokenCredential;
 import org.picketlink.Identity;
-import org.picketlink.Identity.Stateless;
+import org.picketlink.credential.DefaultLoginCredentials;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -38,27 +39,24 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+import static com.gr.project.security.credential.Token.fromRequest;
+
 /**
- * <p>
- * A RBAC {@link Filter} that can be used to protected web resources based on a simple role mapping.
- * </p>
- * <p>
- * This filter accepts two params:
- * </p>
+ * <p>This filter is responsible to examine the {@link javax.servlet.http.HttpServletRequest} for a token. The token is used
+ * to create a security context for its owner, the subject.</p>
  *
  * @author Pedro Silva
- * 
  */
 @WebFilter(urlPatterns = "/*")
-public class AuthorizationFilter implements Filter {
+public class AuthenticationFilter implements Filter {
 
     @Inject
-    @Stateless
+    @Identity.Stateless
     private Identity identity;
-    
+
     @Inject
-    private AuthorizationManager authorizationManager;
-    
+    private DefaultLoginCredentials credentials;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // to configure which resources should be protected, see the AuthorizationManager class.
@@ -68,48 +66,26 @@ public class AuthorizationFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
-        
-        
-        try {
-            if (this.authorizationManager.isAllowed(httpRequest)) {
-                performAuthorizedRequest(chain, httpRequest, httpResponse);                
-            } else {
-                handleUnauthorizedRequest(httpRequest, httpResponse);
-            }
-        } catch (AccessDeniedException ade) {
-            handleUnauthorizedRequest(httpRequest, httpResponse);
-        } catch (Exception e) {
-            if (AccessDeniedException.class.isInstance(e.getCause())) {
-                handleUnauthorizedRequest(httpRequest, httpResponse);
-            } else {
-                httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            }
-        }
-    }
 
-    private void performAuthorizedRequest(FilterChain chain, HttpServletRequest httpRequest, HttpServletResponse httpResponse)
-            throws IOException, ServletException {
-        chain.doFilter(httpRequest, httpResponse);
-    }
-
-    private void handleUnauthorizedRequest(HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws IOException {
         if (!this.identity.isLoggedIn()) {
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            handleAccessDeniedError(httpResponse);
+            Token token = fromRequest(httpRequest);
+
+            if (token != null) {
+                TokenCredential tokenCredential = new TokenCredential(token);
+
+                this.credentials.setCredential(tokenCredential);
+                this.identity.login();
+
+                if (!this.identity.isLoggedIn()) {
+                    httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                }
+            }
         }
+
+        chain.doFilter(httpRequest, httpResponse);
     }
 
     @Override
     public void destroy() {
     }
-
-    private void handleAccessDeniedError(HttpServletResponse httpResponse) throws IOException {
-        if (!this.identity.isLoggedIn()) {
-            httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            httpResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
-        }
-    }
-
 }

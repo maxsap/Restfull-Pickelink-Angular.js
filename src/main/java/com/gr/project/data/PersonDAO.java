@@ -14,34 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.gr.project.service;
+package com.gr.project.data;
 
-import java.util.logging.Logger;
+import com.gr.project.model.Person;
 
-import javax.ejb.Stateless;
-import javax.enterprise.event.Event;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
-import com.gr.project.model.Member;
-
-// The @Stateless annotation eliminates the need for manual transaction demarcation
-@Stateless
-public class Registrator {
-
-    @Inject
-    private Logger log;
+@ApplicationScoped
+public class PersonDAO {
 
     @Inject
     private EntityManager em;
 
-    @Inject
-    private Event<Member> memberEventSrc;
-    
-    public void register(Object instance) throws Exception {
-        log.info("Registering " + instance.getClass());
-        em.persist(instance);
-        
-    	memberEventSrc.fire((Member) instance);
+    public Person findById(String id) {
+        return em.find(Person.class, id);
+    }
+
+    public Person findByEmail(String email) {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Person> criteria = cb.createQuery(Person.class);
+        Root<Person> member = criteria.from(Person.class);
+
+        criteria.select(member).where(cb.equal(member.get("email"), email));
+
+        return em.createQuery(criteria).getSingleResult();
     }
 }

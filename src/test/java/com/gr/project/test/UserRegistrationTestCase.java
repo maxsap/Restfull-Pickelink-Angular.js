@@ -81,9 +81,9 @@ public class UserRegistrationTestCase {
         assertNotNull(disabledAccount);
         assertFalse(disabledAccount.isEnabled());
 
-        String token = activateAccount(activationCode);
+        String tokenId = activateAccount(activationCode);
 
-        assertNotNull(token);
+        assertNotNull(tokenId);
 
         User enabledAccount = BasicModel.getUser(this.identityManager, request.getEmail());
 
@@ -91,15 +91,23 @@ public class UserRegistrationTestCase {
         assertNotNull(enabledAccount);
         assertTrue(enabledAccount.isEnabled());
 
-        TokenCredential tokenCredential = new TokenCredential(token);
+        Token token = new Token();
 
-        tokenCredential.setLoginName(enabledAccount.getLoginName());
+        token.setId(tokenId);
+        token.setUserId(enabledAccount.getId());
+
+        TokenCredential tokenCredential = new TokenCredential(token);
 
         this.identityManager.validateCredentials(tokenCredential);
 
         assertEquals(Credentials.Status.VALID, tokenCredential.getStatus());
 
-        TokenCredential invalidCredential = new TokenCredential("invalid");
+        Token invalidToken = new Token();
+
+        invalidToken.setId("13323");
+        invalidToken.setUserId(enabledAccount.getId());
+
+        TokenCredential invalidCredential = new TokenCredential(invalidToken);
 
         this.identityManager.validateCredentials(invalidCredential);
 
@@ -123,7 +131,10 @@ public class UserRegistrationTestCase {
         this.identityManager.update(user);
 
         String tokenId = UUID.randomUUID().toString();
-        Token token = new Token(tokenId);
+        Token token = new Token();
+
+        token.setId(tokenId);
+        token.setUserId(user.getId());
 
         this.identityManager.updateCredential(user, token);
 
