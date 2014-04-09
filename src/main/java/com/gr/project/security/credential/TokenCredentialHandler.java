@@ -27,7 +27,6 @@ import org.picketlink.idm.credential.handler.AbstractCredentialHandler;
 import org.picketlink.idm.credential.handler.annotations.SupportsCredentials;
 import org.picketlink.idm.credential.storage.CredentialStorage;
 import org.picketlink.idm.model.Account;
-import org.picketlink.idm.model.basic.User;
 import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.idm.spi.CredentialStore;
 import org.picketlink.idm.spi.IdentityContext;
@@ -88,6 +87,7 @@ public class TokenCredentialHandler<S extends CredentialStore<?>, V extends Toke
     public void update(IdentityContext context, Account account, Token credential, @SuppressWarnings("rawtypes") CredentialStore store, Date effectiveDate, Date expiryDate) {
         TokenCredentialStorage tokenStorage = new TokenCredentialStorage();
 
+        tokenStorage.setUserId(account.getId());
         tokenStorage.setId(credential.getId());
 
         if (effectiveDate != null) {
