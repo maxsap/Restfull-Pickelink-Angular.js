@@ -1,8 +1,18 @@
 package com.gr.project.security.rest;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.gr.project.data.PersonDAO;
+import com.gr.project.data.PersonListProducer;
+import com.gr.project.model.Email;
+import com.gr.project.model.Person;
+import com.gr.project.security.UserLoggedIn;
+import com.gr.project.security.credential.Token;
+import com.gr.project.security.model.MyUser;
+import org.picketlink.idm.IdentityManagementException;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.model.Attribute;
+import org.picketlink.idm.model.IdentityType;
+import org.picketlink.idm.query.IdentityQuery;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -18,21 +28,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.picketlink.idm.IdentityManagementException;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.IdentityType;
-import org.picketlink.idm.query.IdentityQuery;
-
-import com.gr.project.data.PersonDAO;
-import com.gr.project.data.PersonListProducer;
-import com.gr.project.model.Email;
-import com.gr.project.model.Person;
-import com.gr.project.security.UserLoggedIn;
-import com.gr.project.security.credential.Token;
-import com.gr.project.security.model.MyUser;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Path("/users")
 @Stateless
@@ -147,10 +145,7 @@ public class UserRestService {
 
         this.identityManager.update(user);
 
-        Token token = new Token();
-
-        token.setId("12345");
-        token.setUserId(user.getId());
+        Token token = Token.create(user);
 
         this.identityManager.updateCredential(user, token);
 

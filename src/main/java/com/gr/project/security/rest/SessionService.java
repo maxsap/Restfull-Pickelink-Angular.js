@@ -22,6 +22,7 @@
 
 package com.gr.project.security.rest;
 
+import com.gr.project.security.UserLoggedIn;
 import com.gr.project.security.credential.TokenCredentialStorage;
 import org.picketlink.Identity;
 import org.picketlink.Identity.Stateless;
@@ -103,9 +104,8 @@ public class SessionService {
     @POST
     @Path("/logout")
     @Produces(MediaType.APPLICATION_JSON)
+    @UserLoggedIn
     public void logout() {
-        if (this.identity.isLoggedIn()) {
-            this.identity.logout();
-        }
+        this.identity.logout();
     }
 }
