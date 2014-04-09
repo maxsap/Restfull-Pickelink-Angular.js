@@ -28,11 +28,6 @@ import org.picketlink.idm.model.Account;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
 /**
@@ -46,7 +41,7 @@ public class LogoutHandler {
     @Inject
     private UserTransaction transaction;
 
-    public void onAfterLogout(@Observes PostLoggedOutEvent event) throws SystemException, NotSupportedException, HeuristicRollbackException, HeuristicMixedException, RollbackException {
+    public void onAfterLogout(@Observes PostLoggedOutEvent event) throws Exception {
         this.transaction.begin();
 
         Account account = event.getAccount();
