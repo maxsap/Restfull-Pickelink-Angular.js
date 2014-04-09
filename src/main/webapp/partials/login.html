@@ -5,7 +5,7 @@
 		On This form submit, the controllers dologin function will be called 
 		Apply some client side validations.
 	-->
-    <form class="form-horizontal"  ng-submit="dologin(loginForm.info)">
+    <form class="form-horizontal"  ng-submit="dologin(loginForm.info)" data-ng-init="clearToken()">
         <input type="hidden" ng-model="loginForm.info.clientId" />
         <div class="control-group">
             <label class="control-label" for="userId">Email</label>

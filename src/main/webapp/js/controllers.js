@@ -28,14 +28,20 @@ function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $
         $scope.newUser = {};
     };
 
-    // Define a register function, which adds the member using the REST service,
-    // and displays any error messages
     $scope.register = function() {
         $scope.successMessages = '';
         $scope.errorMessages = '';
         $scope.errors = {};
+        
+        if($scope.newUser.password != $scope.newUser.passwordConfirmation) {
+    		$scope.errors = {passwordConfirmation : "Password Mismatch !!!"};
+    		return;
+        }
 
-        Members.save($scope.newMember, function(data) {
+        UsersResource.save($scope.newUser, function(data) {
+
+            // mark success on the registration form
+            $scope.successMessages = [ 'User Registered' ];
 
             // mark success on the registration form
             $scope.successMessages = [ 'Member Registered' ];
@@ -49,7 +55,7 @@ function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $
             if ((result.status == 409) || (result.status == 400)) {
                 $scope.errors = result.data;
             } else {
-                $scope.errorMessages = [ 'Unknown  server error' ];
+                $scope.errorMessages = result.data;
             }
             $scope.$apply();
         });
@@ -74,6 +80,10 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
      */
     
     $scope.dologin = function (userData) {
+	
+	// clear the token and the email.
+	$scope.clearToken();
+	
         if (userData.userId != undefined && userData.password != undefined) {
             
             UserService.username = userData.userId;
@@ -94,6 +104,11 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
     $scope.redirectoToSignUp = function() {
 	$location.path( "/signup" );
     };
+    
+    $scope.clearToken = function() {
+	UserService.token = "";
+	UserService.username = "";
+    }
 
 }
 

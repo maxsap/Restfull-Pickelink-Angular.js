@@ -22,10 +22,11 @@
 
 package com.gr.project.security;
 
-import com.gr.project.security.credential.Token;
-import com.gr.project.security.credential.TokenCredential;
-import org.picketlink.Identity;
-import org.picketlink.credential.DefaultLoginCredentials;
+import static com.gr.project.security.credential.Token.fromRequest;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -37,9 +38,14 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-import static com.gr.project.security.credential.Token.fromRequest;
+import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import org.apache.deltaspike.security.api.authorization.SecurityViolation;
+import org.picketlink.Identity;
+import org.picketlink.credential.DefaultLoginCredentials;
+
+import com.gr.project.security.credential.Token;
+import com.gr.project.security.credential.TokenCredential;
 
 /**
  * <p>This filter is responsible to examine the {@link javax.servlet.http.HttpServletRequest} for a token. The token is used
@@ -77,7 +83,19 @@ public class AuthenticationFilter implements Filter {
                 this.identity.login();
 
                 if (!this.identity.isLoggedIn()) {
-                    httpResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                	Set<SecurityViolation> violations = new HashSet<SecurityViolation>();
+                	
+                	violations.add(new SecurityViolation() {
+						
+						private static final long serialVersionUID = 1L;
+
+						@Override
+						public String getReason() {
+							return "Unautorized";
+						}
+					});
+                	
+                	throw new AccessDeniedException(violations);
                 }
             }
         }
