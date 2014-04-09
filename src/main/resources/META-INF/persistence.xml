@@ -19,7 +19,7 @@
 
         <class>com.gr.project.model.Person</class>
 
-        <class>com.gr.project.security.model.MyUser</class>
+        <class>com.gr.project.security.model.entity.MyUserTypeEntity</class>
         <class>org.picketlink.idm.jpa.model.sample.simple.AttributedTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.RoleTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity</class>
