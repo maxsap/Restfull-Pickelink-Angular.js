@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function MembersCtrl($scope, $http, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
+function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -67,24 +67,24 @@ function MembersCtrl($scope, $http, UsersResource, UserService, localStorageServ
     $scope.orderBy = 'name';
 }
 
-
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, localStorageService) {
+function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q) {
     
     /**
      * Save a person. Make sure that a person object is present before calling the service.
      */
+    
     $scope.dologin = function (userData) {
         if (userData.userId != undefined && userData.password != undefined) {
-
+            
             UserService.username = userData.userId;
             
             SessionResource.login(userData, function (data) {
         	    console.log("Auth");
         	    UserService.isLogged = true;
-                    UserService.token = data.id;
+                    UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
                     $location.path( "/home" );
                 }, function (err) {
-                    console.log(err.data.errorMessage);
+                    console.log(err.data.message);
                 }
             );
         }
@@ -98,14 +98,23 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
 }
 
 
-function SignupCtrl($scope, $http, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
+function SignupCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout) {
 
-    // Define a register function, which adds the member using the REST service,
-    // and displays any error messages
+    /*
+     * Define a register function, which adds the member using the REST service,
+     * and displays any error messages.
+     * Shows a different way to get form data
+     */ 
+
     $scope.register = function() {
         $scope.successMessages = '';
         $scope.errorMessages = '';
         $scope.errors = {};
+        
+        if($scope.newUser.password != $scope.newUser.passwordConfirmation) {
+    		$scope.errors = {passwordConfirmation : "Password Mismatch !!!"};
+    		return;
+        }
 
         UsersResource.save($scope.newUser, function(data) {
 
@@ -125,7 +134,7 @@ function SignupCtrl($scope, $http, UsersResource, UserService, localStorageServi
     };
 }
 
-function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
+function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout) {
 
     var ac = $routeParams.activationCode;
     
@@ -137,7 +146,7 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
         UsersResource.activation(JSON.stringify(ac), function(data) {
             console.log(data);
             UserService.isLogged = true;
-            UserService.token = data.id;
+            UserService.token = JSON.stringify(data);
             $location.path( "/home" );
         }, function(result) {
             // if the activation fails for any reason, redirect to login
@@ -149,11 +158,4 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
     };
     
     $scope.activate();
-}
-
-
-function HomeAppCtrl($scope, localStorageService, UserService) {
-    $scope.access_token =   localStorageService.get('access_token');
-    UserService.isLogged = ($scope.access_token)?1:0;
-    UserService.token = $scope.access_token;
 }

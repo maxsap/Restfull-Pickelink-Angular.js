@@ -17,52 +17,19 @@
 -->
 <!-- This is a partial, and is templated by AngularJS -->
 <div>
-    <h1>Welcome to JBoss!</h1>
+    <h1>Welcome to PicketLink Angular.js example</h1>
 
     <div>
-        <p>You have successfully deployed a Java EE 6 Enterprise
-            Application.</p>
+        <p>You have successfully authenticated</p>
         <h3>Your application can run on:</h3>
         <img src="gfx/dualbrand_as7eap.png" />
     </div>
-    
-    <!-- <div data-ng-controller="MembersCtrl" data-ng-switch="!!isLogged" data-ng-cloak>
-      <div data-ng-switch-when="false">
-        <div class="alert alert-warning" data-ng-show="sessionExpired">
-          <strong>Session Expired!</strong>
-        </div>
-        <div class="alert" data-ng-show="error">
-          <pre>{{error | json}}</pre>
-        </div>
-        <form>
-          <legend>Please enter your credentials</legend>
-          <input type="text" placeholder="E-Mail" data-ng-model="credentials.email" required />
-          <input type="password" placeholder="Password" data-ng-model="credentials.password" required />
-          <button data-ng-click="login(credentials)">Log In</button>
-        </form>
-      </div>
-      <div data-ng-switch-when="true">
-        <h3>Welcome, {{user.name}}!</h3>
-
-        <p>
-          <a href="" data-ng-click="ping()">Execute Server Action</a>
-          <div data-ng-show="ok">Ok!</div>
-        </p>
-
-        <footer>
-          <small>
-            Logged in as {{user.email}} | Created | {{user.createdAt | date}} |
-            <a href="" data-ng-click="logout()">Log Out</a>
-          </small>
-        </footer>
-      </div> -->
 
 	    <!-- Standard HTML form, with the submit function bound to the register() function defined in the the controller -->
 	    <form id="reg" ng-submit="register()">
 	        <h2>Member Registration</h2>
 	        <fieldset>
 	            <legend>Register a member:</legend>
-	            <!-- Each input is bound to a property on the prototype newMember object -->
 	            <div>
 	                <label for="name">Name:</label>
 	                <input type="text" name="name" id="name"  ng-model="newMember.name" placeholder="Your Name" required autofocus/>

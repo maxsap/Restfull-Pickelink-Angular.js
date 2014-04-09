@@ -24,65 +24,26 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 
   return Product;
 }])
-// http://stackoverflow.com/questions/15161349/multiple-routing-urls-for-single-service-angularjs
-//.factory('UsersResource', ['$resource', function ($resource) {
-//    return $resource('rest/users/:dest', {}, {
-//	login: {method: 'POST', params: {dest:"login"}},
-//	token: {method: 'POST', params: {dest:"token"}}
-//    });
-//}])
-.factory('TokenHandler', function() {
-  var tokenHandler = {};
-  var token = "none";
+.factory('SessionResource', ['$resource', function($resource) {
 
-  tokenHandler.set = function( newToken ) {
-    token = newToken;
-  };
+    return $resource('rest/session/:dest', {}, {
+  	login: {method: 'POST', params: {dest:"login"}},
+  	logout: {method: 'POST', params: {dest:"login"}}
+    });
 
-  tokenHandler.get = function() {
-    return token;
-  };
+    return resource;
+  }])
+.factory('UsersResource', ['$resource', function($resource) {
 
-  // wrap given actions of a resource to send auth token with every
-  // request
-  tokenHandler.wrapActions = function( resource, actions ) {
-    // copy original resource
-    var wrappedResource = resource;
-    for (var i=0; i < actions.length; i++) {
-      tokenWrapper( wrappedResource, actions[i] );
-    };
-    // return modified copy of resource
-    return wrappedResource;
-  };
-
-  // wraps resource action to send request with auth token
-  var tokenWrapper = function( resource, action ) {
-    // copy original action
-    resource['_' + action]  = resource[action];
-    // create new action wrapping the original and sending token
-    resource[action] = function( data, success, error){
-      return resource['_' + action](
-        angular.extend({}, data || {}, {access_token: tokenHandler.get()}),
-        success,
-        error
-      );
-    };
-  };
-
-  return tokenHandler;
-})
-.factory('UsersResource', ['$resource', 'TokenHandler', function($resource, tokenHandler) {
-
+  // Easy way to template urls and reuse them later
   return $resource('rest/users/:dest', {}, {
-	login: {method: 'POST', params: {dest:"login"}},
 	registration: {method: 'POST', params: {dest:"registration"}},
-	token: {method: 'POST', params: {dest:"token"}}
+	activation: {method: 'POST', params: {dest:"activation"}}
   });
-
-//  resource = tokenHandler.wrapActions( resource, ["query", "update"] );
 
   return resource;
 }])
+// Define the object to hold user state on the client
 .factory('UserService', [function () {
     var sdo = {
         isLogged: false,
@@ -93,21 +54,9 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
         expires:""
     };
     return sdo;
-}])
-.factory('Auth', ['localStorageService', '$http',
-	function(localStorageService, $http) {
-	    $http.defaults.headers.common['Authorization'] = 'Basic ' + localStorageService.get('access_token');
-	    return {
-		setCredentials : function(token) {
-		    $http.defaults.headers.common.Authorization = 'Basic ' + token;
-		},
-		clearCredentials : function() {
-		    localStorageService.remove('access_token');
-		}
-	    };
-} ])
+}]);
 
-angular.module('membersService', ['ngResource', 'ngRoute']).
-factory('Members', function($resource){
-    return $resource('rest/members:memberId', {});
-});
+//angular.module('membersService', ['ngResource', 'ngRoute']).
+//factory('Members', function($resource){
+//    return $resource('rest/members:memberId', {});
+//});

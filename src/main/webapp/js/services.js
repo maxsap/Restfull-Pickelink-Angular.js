@@ -35,6 +35,7 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
   }])
 .factory('UsersResource', ['$resource', function($resource) {
 
+  // Easy way to template urls and reuse them later
   return $resource('rest/users/:dest', {}, {
 	registration: {method: 'POST', params: {dest:"registration"}},
 	activation: {method: 'POST', params: {dest:"activation"}}
@@ -42,6 +43,7 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 
   return resource;
 }])
+// Define the object to hold user state on the client
 .factory('UserService', [function () {
     var sdo = {
         isLogged: false,
@@ -54,7 +56,7 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
     return sdo;
 }]);
 
-angular.module('membersService', ['ngResource', 'ngRoute']).
-factory('Members', function($resource){
-    return $resource('rest/members:memberId', {});
-});
+//angular.module('membersService', ['ngResource', 'ngRoute']).
+//factory('Members', function($resource){
+//    return $resource('rest/members:memberId', {});
+//});

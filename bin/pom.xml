@@ -18,13 +18,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd'T'HHmmss</maven.build.timestamp.format>
 		<jboss.bom.version>1.0.7.CR8</jboss.bom.version>
-<<<<<<< HEAD
-		<version.picketlink.javaee.bom>2.6.0.CR1</version.picketlink.javaee.bom>
-=======
-
         <!-- PicketLink BOM version-->
         <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
->>>>>>> 8a2f33982450a3de74e9b32fd286fdd9e30d2bd6
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -56,15 +51,6 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
-<<<<<<< HEAD
-<!-- 			<dependency> -->
-<!-- 				<groupId>org.jboss.bom.eap</groupId> -->
-<!-- 				<artifactId>jboss-javaee-6.0-with-security</artifactId> -->
-<!-- 				<version>${version.jboss.bom.eap}</version> -->
-<!-- 				<type>pom</type> -->
-<!-- 				<scope>import</scope> -->
-<!-- 			</dependency> -->
-=======
 
             <!-- Configure the PicketLink BOM with Apache DeltaSpike dependencies. -->
             <dependency>
@@ -74,7 +60,6 @@
                 <scope>import</scope>
                 <version>${version.picketlink.javaee.bom}</version>
             </dependency>
->>>>>>> 8a2f33982450a3de74e9b32fd286fdd9e30d2bd6
 			<dependency>
 				<groupId>org.jboss.bom.wfk</groupId>
 				<artifactId>jboss-javaee-6.0-with-deltaspike</artifactId>
@@ -151,7 +136,7 @@
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-impl</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink</groupId>
@@ -161,7 +146,7 @@
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-idm-impl</artifactId>
-			<scope>runtime</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.picketlink</groupId>
@@ -194,11 +179,6 @@
 		<dependency>
 			<groupId>org.infinispan</groupId>
 			<artifactId>infinispan-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-jpamodelgen</artifactId>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

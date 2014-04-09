@@ -15,15 +15,12 @@
         http://java.sun.com/xml/ns/persistence
         http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	<persistence-unit name="primary">
-		<!-- If you are running in a production environment, add a managed data 
-			source, this example data source is just for development and testing! -->
-		<!-- The datasource is deployed as WEB-INF/kitchensink-quickstart-ds.xml, 
-			you can find it in the source at src/main/webapp/WEB-INF/kitchensink-quickstart-ds.xml -->
-		<jta-data-source>java:jboss/MySQLDS</jta-data-source>
-		
-		<!-- All those entity classes are provided by the picketlink-idm-schema module. -->
-		<class>org.picketlink.idm.jpa.model.sample.simple.AttributedTypeEntity</class>
-		<class>org.picketlink.idm.jpa.model.sample.simple.AccountTypeEntity</class>
+		<jta-data-source>java:jboss/datasources/example-ds</jta-data-source>
+
+        <class>com.gr.project.model.Person</class>
+
+        <class>com.gr.project.security.model.MyUser</class>
+        <class>org.picketlink.idm.jpa.model.sample.simple.AttributedTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.RoleTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.IdentityTypeEntity</class>
@@ -32,12 +29,11 @@
 		<class>org.picketlink.idm.jpa.model.sample.simple.PartitionTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.AttributeTypeEntity</class>
 		<class>org.picketlink.idm.jpa.model.sample.simple.PasswordCredentialTypeEntity</class>
-		<class>org.picketlink.idm.jpa.model.sample.simple.OTPCredentialTypeEntity</class>
-		<class>org.picketlink.idm.jpa.model.sample.simple.DigestCredentialTypeEntity</class>
+        <class>com.gr.project.security.credential.TokenCredentialTypeEntity</class>
 		
 		<properties>
 			<!-- Properties for Hibernate -->
-			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.hbm2ddl.auto" value="create" />
 			<property name="hibernate.show_sql" value="false" />
 		</properties>
 	</persistence-unit>

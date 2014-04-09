@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function MembersCtrl($scope, $http, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
+function MembersCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -67,21 +67,27 @@ function MembersCtrl($scope, $http, UsersResource, UserService, localStorageServ
     $scope.orderBy = 'name';
 }
 
-
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, UsersResource, $location, $q, localStorageService) {
-    $scope.isLogged = UserService.isLogged;
+function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q) {
     
     /**
      * Save a person. Make sure that a person object is present before calling the service.
+     * Also perform some final validations (like passwords match)
      */
+    
+    if(userData.password == userData.passwordConfirmation) {
+	$scope.errors = {errors.passwordConfirmation : "Password Mismatch"};
+	return;
+    }
+    
     $scope.dologin = function (userData) {
         if (userData.userId != undefined && userData.password != undefined) {
-
-            UsersResource.login(userData, function (u) {
+            
+            UserService.username = userData.userId;
+            
+            SessionResource.login(userData, function (data) {
         	    console.log("Auth");
-                    UserService.isLogged = true;
-                    UserService.code = u.code;
-                    UserService.state = u.state;
+        	    UserService.isLogged = true;
+                    UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
                     $location.path( "/home" );
                 }, function (err) {
                     console.log(err.data.errorMessage);
@@ -98,7 +104,7 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, UsersResourc
 }
 
 
-function SignupCtrl($scope, $http, UsersResource, UserService, localStorageService, $q, $location, $timeout) {
+function SignupCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout) {
 
     // Define a register function, which adds the member using the REST service,
     // and displays any error messages
@@ -125,9 +131,28 @@ function SignupCtrl($scope, $http, UsersResource, UserService, localStorageServi
     };
 }
 
+function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout) {
 
-function HomeAppCtrl($scope, localStorageService, UserService) {
-    $scope.access_token =   localStorageService.get('access_token');
-    UserService.isLogged = ($scope.access_token)?1:0;
-    UserService.token = $scope.access_token;
+    var ac = $routeParams.activationCode;
+    
+    UserService.username = $routeParams.username;
+    
+    // Define a register function, which adds the member using the REST service,
+    // and displays any error messages
+    $scope.activate = function() {
+        UsersResource.activation(JSON.stringify(ac), function(data) {
+            console.log(data);
+            UserService.isLogged = true;
+            UserService.token = JSON.stringify(data);
+            $location.path( "/home" );
+        }, function(result) {
+            // if the activation fails for any reason, redirect to login
+            // XXX add check and is the activation fails due to user already active, then redirect to home
+            
+            $location.path( "/login" );
+        });
+
+    };
+    
+    $scope.activate();
 }

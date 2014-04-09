@@ -22,7 +22,9 @@
 
 package com.gr.project.security;
 
-import java.io.IOException;
+import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import org.picketlink.Identity;
+import org.picketlink.Identity.Stateless;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -34,12 +36,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
-import org.picketlink.Identity;
-import org.picketlink.Identity.Stateless;
-
-import com.gr.project.util.ThreadLocalUtils;
+import java.io.IOException;
 
 /**
  * <p>
@@ -74,9 +71,6 @@ public class AuthorizationFilter implements Filter {
         
         
         try {
-        	ThreadLocalUtils.currentRequest.set(httpRequest);
-            ThreadLocalUtils.currentResponse.set(httpResponse);
-            
             if (this.authorizationManager.isAllowed(httpRequest)) {
                 performAuthorizedRequest(chain, httpRequest, httpResponse);                
             } else {
@@ -90,9 +84,6 @@ public class AuthorizationFilter implements Filter {
             } else {
                 httpResponse.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
-        } finally{
-            ThreadLocalUtils.currentRequest.set(null);
-            ThreadLocalUtils.currentResponse.set(null);
         }
     }
 

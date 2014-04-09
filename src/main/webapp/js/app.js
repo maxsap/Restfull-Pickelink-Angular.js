@@ -16,8 +16,8 @@
  */
 // Define any routes for the app
 // Note that this app is a single page app, and each partial is routed to using the URL fragment. For example, to select the 'home' route, the URL is http://localhost:8080/jboss-as-kitchensink-angularjs/#/home
-var appModule = angular.module('kitchensink',
-	[ 'membersService', 'productServices', 'LocalStorageModule' ]).config(
+var appModule = angular.module('PLAngular',
+	[ 'productServices' ]).config(
 	[ '$routeProvider', function($routeProvider) {
 	    $routeProvider.when('/home', {
 		templateUrl : 'partials/home.html',

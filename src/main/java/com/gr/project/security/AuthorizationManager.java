@@ -22,12 +22,16 @@
 
 package com.gr.project.security;
 
-import static org.picketlink.idm.model.basic.BasicModel.getRole;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
+import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import org.apache.deltaspike.security.api.authorization.Secures;
+import org.picketlink.Identity;
+import org.picketlink.Identity.Stateless;
+import org.picketlink.credential.DefaultLoginCredentials;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.RelationshipManager;
+import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.Role;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -37,21 +41,12 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.interceptor.InvocationContext;
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
-import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
-import org.apache.deltaspike.security.api.authorization.Secures;
-import org.picketlink.Identity;
-import org.picketlink.Identity.AuthenticationResult;
-import org.picketlink.Identity.Stateless;
-import org.picketlink.credential.DefaultLoginCredentials;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.model.Account;
-import org.picketlink.idm.model.basic.BasicModel;
-import org.picketlink.idm.model.basic.Role;
-
-import com.gr.project.security.credential.TokenCredential;
-import com.gr.project.util.ThreadLocalUtils;
+import static org.picketlink.idm.model.basic.BasicModel.getRole;
 
 /**
  * <p>
@@ -83,6 +78,9 @@ public class AuthorizationManager {
     @Inject
     private Instance<RelationshipManager> relationshipManager;
 
+    @Inject
+    private Instance<HttpServletRequest> request;
+
     @PostConstruct
     public void init() {
         // let's configure which URIs should be protected
@@ -95,40 +93,12 @@ public class AuthorizationManager {
      * is called before the annotated method is called.
      * </p>
      * 
-     * @param identity
      * @return
      */
     @Secures
     @UserLoggedIn
-    public boolean isUserLoggedIn(Identity identity) {
-    	
-    	if (this.identity.isLoggedIn()) {
-	        return true;
-	    } else {
-	    	try {
-		    	HttpServletRequest httpRequest = ThreadLocalUtils.currentRequest.get();
-		    	
-		    	if(httpRequest.getHeader("x-session-token") != null && !httpRequest.getHeader("x-session-token").isEmpty()) {
-		  			 if(httpRequest.getHeader("user-id") != null && !httpRequest.getHeader("user-id").isEmpty()) {
-		  				
-		  				TokenCredential tokenCredential = new TokenCredential(httpRequest.getHeader("x-session-token"));
-
-		  		        tokenCredential.setLoginName(httpRequest.getHeader("user-id"));
-		  		        
-				        this.credentials.setCredential(tokenCredential);
-				        AuthenticationResult result = this.identity.login();
-				        
-				        return result.equals(AuthenticationResult.SUCCESS);
-		  			 }
-		       } else {
-		    	   return false;
-		       }
-	    	}catch(Exception ex) {
-	    		return false;
-	    	}
-	    }
-    	
-    	return false;
+    public boolean isUserLoggedIn() {
+        return identity.isLoggedIn();
     }
 
     /**
@@ -178,9 +148,7 @@ public class AuthorizationManager {
     }
     
     public boolean isAdmin() {
-        Identity identity = getIdentity();
-
-        if (isUserLoggedIn(identity)) {
+        if (isUserLoggedIn()) {
             IdentityManager identityManager = getIdentityManager();
             RelationshipManager relationshipManager = getRelationshipManager();
 
@@ -196,7 +164,6 @@ public class AuthorizationManager {
      * </p>
      * 
      * @param httpRequest
-     * @throws UserNotLoggedInException If the request requires authentication and the user is not authenticated
      * @throws AccessDeniedException If the request is not allowed considering the resource permissions.
      */
     public boolean isAllowed(HttpServletRequest httpRequest) throws AccessDeniedException {
