@@ -63,8 +63,8 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
     };
     
     $scope.clearToken = function() {
-	UserService.token = "";
-	UserService.username = "";
+	UserService.token = null;
+	UserService.username = null;
 	
 	// clean up storage
         localStorageService.remove('token');
@@ -130,8 +130,8 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
     };
     
     $scope.clearToken = function() {
-	UserService.token = "";
-	UserService.username = "";
+	UserService.token = null;
+	UserService.username = null;
 	
 	// clean up storage
         localStorageService.remove('token');

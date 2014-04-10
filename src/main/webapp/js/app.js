@@ -55,11 +55,11 @@ var appModule = angular.module('PLAngular',
 	    return {
 		'request' : function(config) {
 		    var token = localStorageService.get('token');
-		    if(token != null)
+		    if(token != null && token != '')
 			config.headers['x-session-token'] = token;
 		    
 		    var userId = localStorageService.get('uid');
-		    if(userId != null)
+		    if(userId != null && userId != '')
 			config.headers['user-id'] = localStorageService.get('uid');
 		    
 		    return config || $q.when(config);
