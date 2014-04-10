@@ -17,7 +17,7 @@
 // Define any routes for the app
 // Note that this app is a single page app, and each partial is routed to using the URL fragment. For example, to select the 'home' route, the URL is http://localhost:8080/jboss-as-kitchensink-angularjs/#/home
 var appModule = angular.module('PLAngular',
-	[ 'productServices', 'LocalStorageModule']).config(
+	[ 'productServices', 'LocalStorageModule', 'SignatureUtil']).config(
 	[ '$routeProvider', function($routeProvider) {
 	    $routeProvider.when('/home', {
 		templateUrl : 'partials/home.html',
@@ -51,7 +51,7 @@ var appModule = angular.module('PLAngular',
 	    }).otherwise({
 		redirectTo : 'login'
 	    });
-	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', 'localStorageService', function($q, $location, UserService, localStorageService) {
+	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', 'localStorageService', 'SignatureUtil', function($q, $location, UserService, localStorageService, SignatureUtil) {
 	    return {
 		'request' : function(config) {
 		    var token = localStorageService.get('token');
@@ -61,6 +61,16 @@ var appModule = angular.module('PLAngular',
 		    var userId = localStorageService.get('uid');
 		    if(userId != null && userId != '')
 			config.headers['user-id'] = localStorageService.get('uid');
+			
+			var str = "{\"iss\":\"joe\",\r\n" + $location + ":true}";
+			
+			// XXX this should come from the API
+			var hs256 = "{\"typ\":\"JWT\",\r\n"+
+						 " \"alg\":\"HS256\"}";
+			
+			var res = SignatureUtil.getInstance().generateSignature(str, hs256);
+			console.log(res);
+			// XXX Token validation should be here
 		    
 		    return config || $q.when(config);
 		},
@@ -71,8 +81,12 @@ var appModule = angular.module('PLAngular',
 		
 		'response' : function(response) {
 		    if (response.status === 401) {
-			$location.path('/');
+				$location.path('/');
 		    }
+			// XXX read the actual value from the response and decode it!
+			var res = SignatureUtil.getInstance().verifySignature(joeStr);
+			console.log(res);
+			// XXX check verification status
 		    return response || $q.when(response);
 		},
 		

@@ -92,7 +92,7 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
     $scope.orderBy = 'name';
 }
 
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, localStorageService) {
+function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, localStorageService, SignatureUtil) {
     
     /**
      * Save a person. Make sure that a person object is present before calling the service.

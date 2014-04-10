@@ -55,8 +55,30 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
     };
     return sdo;
 }]);
-
-//angular.module('membersService', ['ngResource', 'ngRoute']).
-//factory('Members', function($resource){
-//    return $resource('rest/members:memberId', {});
-//});
+	
+angular.module("SignatureUtil", [])
+.service("SignatureUtil", function() {
+    var signer = function() {
+				 
+	var hmacKey = "hmackey";
+	
+	this.generateSignature = function(joeStr, hs256) {
+	    
+	    var token = new jwt.WebToken(joeStr, hs256);
+	    var signed = token.serialize(hmacKey)
+	    var split = signed.split("\.")
+		    
+	    return split;
+        };
+		
+	this.verifySignature = function(signature) {
+		var token = jwt.WebTokenParser.parse(signature);
+		return token.verify(hmacKey);
+    };
+	
+    return {
+        getInstance: function () {
+          return new signer();
+        }
+    };
+});
