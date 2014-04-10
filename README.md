@@ -7,9 +7,9 @@ This project is using WildFly 8 and assumes that SSL is enabled on the server an
 
 In order to configure SSL support on Wildfly please follow this instructions:
 	Edit standalone.xml, search for "urn:jboss:domain:undertow:1.0"
-	add following listener: <https-listener name="default-https" socket-binding="https" security-realm="ssl-realm"/>
+	add following listener: <b> <https-listener name="default-https" socket-binding="https" security-realm="ssl-realm"/> </b>
 	
-	final undertow subsystem should look like this one:
+final undertow subsystem should look like this one:
 		<subsystem xmlns="urn:jboss:domain:undertow:1.0">
             <buffer-caches>
                 <buffer-cache name="default" buffer-size="1024" buffers-per-region="1024" max-regions="10"/>
@@ -30,9 +30,9 @@ In order to configure SSL support on Wildfly please follow this instructions:
             </handlers>
         </subsystem>
 	
-	follow instructions found here https://docs.jboss.org/author/display/WFLY8/Examples for how to generate ssl certificate.
-	Edit standalone.xml, search for "<security-realms>"
-	add following security-realm: 
+follow instructions <a href="https://docs.jboss.org/author/display/WFLY8/Examples">found here</a> for how to generate ssl certificate.
+Edit standalone.xml, search for <b>"<security-realms>"</b>
+add following security-realm: 
 			<security-realm name="ssl-realm">
 				<server-identities>
 					<ssl>
@@ -45,7 +45,7 @@ In order to configure SSL support on Wildfly please follow this instructions:
                 </authentication>
 			</security-realm>
 	
-	Final security realms should look like:
+Final security realms should look like:
 	        <security-realms>
 				<security-realm name="ManagementRealm">
 					<authentication>
@@ -79,14 +79,14 @@ In order to configure SSL support on Wildfly please follow this instructions:
 			</security-realms>
 			
 In order to configure the email JNDI resource please follow this instructions:
-	Edit standalone.xml, search for "<subsystem xmlns="urn:jboss:domain:mail:2.0">"
+Edit standalone.xml, search for <b>"<subsystem xmlns="urn:jboss:domain:mail:2.0">"</b>
 	
-	add following mail-session as follows:
+add following mail-session as follows:
 			<mail-session name="App" jndi-name="java:/mail/gmail">
                 <smtp-server outbound-socket-binding-ref="mail-smtp-gmail" ssl="true" username="YOUR_GMAIL_EMAIL" password="YOUR_GMAIL_PASSWORD"/>
             </mail-session>
 			
-	The final mail subsystem should be:
+The final mail subsystem should be:
 	        <subsystem xmlns="urn:jboss:domain:mail:2.0">
 				<mail-session name="default" jndi-name="java:jboss/mail/Default">
 					<smtp-server outbound-socket-binding-ref="mail-smtp"/>
@@ -96,14 +96,14 @@ In order to configure the email JNDI resource please follow this instructions:
 				</mail-session>
 			</subsystem>
 			
-	search for "<outbound-socket-binding name="mail-smtp">"
-	Add the following outbound-socket-binding:
+search for <b>"<outbound-socket-binding name="mail-smtp">"</b>
+Add the following outbound-socket-binding:
 		<outbound-socket-binding name="mail-smtp-gmail">
             <remote-destination host="smtp.gmail.com" port="465"/>
         </outbound-socket-binding>
-	in the socket-binding-group. 
+in the socket-binding-group. 
 	
-	The final one should be like this one :
+The final one should be like this one :
 	    <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
 			<socket-binding name="management-native" interface="management" port="${jboss.management.native.port:9999}"/>
 			<socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
