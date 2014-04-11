@@ -51,7 +51,7 @@ var appModule = angular.module('PLAngular',
 	    }).otherwise({
 		redirectTo : 'login'
 	    });
-	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', 'localStorageService', 'SignatureUtil', function($q, $location, UserService, localStorageService, SignatureUtil) {
+	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', 'SignatureUtil', function($q, $location, UserService, SignatureUtil) {
 	    return {
 		'request' : function(config) {
 		    var token = sessionStorage.getItem('token');
