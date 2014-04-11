@@ -83,10 +83,13 @@ var appModule = angular.module('PLAngular',
 		    if (response.status === 401) {
 				$location.path('/');
 		    }
-			// XXX read the actual value from the response and decode it!
-			var res = SignatureUtil.getInstance().verifySignature(joeStr);
-			console.log(res);
-			// XXX check verification status
+		    
+		    var str = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJqb2UiLA0KW29iamVjdCBPYmplY3RdOnRydWV9.cOSM-mAHSz1DetLSO5X3My62LZU2cMMlm06f1kuc2tY";
+		    // XXX read the actual value from the response and decode it!
+		    var res = SignatureUtil.getInstance().verifySignature(str);
+		    console.log(res);
+		    // XXX check verification status
+		    
 		    return response || $q.when(response);
 		},
 		

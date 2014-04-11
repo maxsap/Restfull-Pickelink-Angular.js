@@ -70,12 +70,13 @@ angular.module("SignatureUtil", [])
 		    
 	    return split;
         };
+        
+        this.verifySignature = function(signature) {
+            var token = jwt.WebTokenParser.parse(signature);
+            return token.verify(hmacKey);
+        };
+    }
 		
-	this.verifySignature = function(signature) {
-		var token = jwt.WebTokenParser.parse(signature);
-		return token.verify(hmacKey);
-    };
-	
     return {
         getInstance: function () {
           return new signer();
