@@ -17,7 +17,7 @@
 // Define any routes for the app
 // Note that this app is a single page app, and each partial is routed to using the URL fragment. For example, to select the 'home' route, the URL is http://localhost:8080/jboss-as-kitchensink-angularjs/#/home
 var appModule = angular.module('PLAngular',
-	[ 'productServices', 'LocalStorageModule', 'SignatureUtil']).config(
+	[ 'productServices', 'SignatureUtil']).config(
 	[ '$routeProvider', function($routeProvider) {
 	    $routeProvider.when('/home', {
 		templateUrl : 'partials/home.html',
@@ -54,7 +54,7 @@ var appModule = angular.module('PLAngular',
 	} ]).factory('authHttpResponseInterceptor', ['$q', '$location', 'UserService', 'localStorageService', 'SignatureUtil', function($q, $location, UserService, localStorageService, SignatureUtil) {
 	    return {
 		'request' : function(config) {
-		    var token = localStorageService.get('token');
+		    var token = sessionStorage.getItem('token');
 		    if(token != null && token != '')
 			config.headers['x-session-token'] = token;
 		    

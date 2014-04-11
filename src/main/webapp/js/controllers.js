@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout, SessionResource, localStorageService) {
+function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout, SessionResource) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -66,7 +66,7 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
 	UserService.token = null;
 	
 	// clean up storage
-        localStorageService.remove('token');
+        sessionStorage.removeItem('token');
     }
     
     
@@ -90,7 +90,7 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
     $scope.orderBy = 'name';
 }
 
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, localStorageService, SignatureUtil) {
+function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, SignatureUtil) {
     
     /**
      * Save a person. Make sure that a person object is present before calling the service.
@@ -111,7 +111,7 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
                     UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
                     
                     // persist token, user id to the storage
-                    localStorageService.add('token', JSON.stringify(data));
+                    sessionStorage.setItem('token', JSON.stringify(data));
                     
                     $location.path( "/home" );
                 }, function (err) {
@@ -131,7 +131,7 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
 	UserService.username = null;
 	
 	// clean up storage
-        localStorageService.remove('token');
+	sessionStorage.removeItem('token');
     }
 
 }
@@ -173,7 +173,7 @@ function SignupCtrl($scope, $http, UsersResource, UserService, $q, $location, $t
     };
 }
 
-function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout, localStorageService) {
+function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout) {
 
     var ac = $routeParams.activationCode;
     
@@ -188,7 +188,7 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
             UserService.token = JSON.stringify(data);
             
             // persist token, user id to the storage
-            localStorageService.add('token', JSON.stringify(data));
+            sessionStorage.setItem('token', JSON.stringify(data));
             
             $location.path( "/home" );
         }, function(result) {
