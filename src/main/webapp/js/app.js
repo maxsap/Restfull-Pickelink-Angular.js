@@ -58,10 +58,6 @@ var appModule = angular.module('PLAngular',
 		    if(token != null && token != '')
 			config.headers['x-session-token'] = token;
 		    
-		    var userId = localStorageService.get('uid');
-		    if(userId != null && userId != '')
-			config.headers['user-id'] = localStorageService.get('uid');
-			
 			var str = "{\"iss\":\"joe\",\r\n" + $location + ":true}";
 			
 			// XXX this should come from the API

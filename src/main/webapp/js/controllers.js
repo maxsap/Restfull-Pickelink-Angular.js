@@ -64,11 +64,9 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
     
     $scope.clearToken = function() {
 	UserService.token = null;
-	UserService.username = null;
 	
 	// clean up storage
         localStorageService.remove('token');
-        localStorageService.remove('uid');
     }
     
     
@@ -114,7 +112,6 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
                     
                     // persist token, user id to the storage
                     localStorageService.add('token', JSON.stringify(data));
-                    localStorageService.add('uid', UserService.username);
                     
                     $location.path( "/home" );
                 }, function (err) {
@@ -135,7 +132,6 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
 	
 	// clean up storage
         localStorageService.remove('token');
-        localStorageService.remove('uid');
     }
 
 }
@@ -193,7 +189,6 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
             
             // persist token, user id to the storage
             localStorageService.add('token', JSON.stringify(data));
-            localStorageService.add('uid', UserService.username);
             
             $location.path( "/home" );
         }, function(result) {
