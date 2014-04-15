@@ -22,14 +22,18 @@
 package com.gr.project.security.credential;
 
 import com.gr.project.security.model.MyUser;
+import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.credential.handler.AbstractCredentialHandler;
+import org.picketlink.idm.credential.Credentials;
+import org.picketlink.idm.credential.handler.CredentialHandler;
 import org.picketlink.idm.credential.handler.annotations.SupportsCredentials;
-import org.picketlink.idm.credential.storage.CredentialStorage;
 import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.Partition;
 import org.picketlink.idm.query.IdentityQuery;
 import org.picketlink.idm.spi.CredentialStore;
 import org.picketlink.idm.spi.IdentityContext;
+import org.picketlink.json.jose.JWS;
+import org.picketlink.json.jose.JWSBuilder;
 
 import java.util.Date;
 import java.util.List;
@@ -41,32 +45,53 @@ import java.util.List;
     credentialClass = { TokenCredential.class, Token.class },
     credentialStorage = TokenCredentialStorage.class
 )
-public class TokenCredentialHandler<S extends CredentialStore<?>, V extends TokenCredential, U extends Token> extends AbstractCredentialHandler<S, V, U> {
+public class TokenCredentialHandler<S extends CredentialStore<?>, V extends TokenCredential, U extends Token> implements CredentialHandler<S, V, U> {
 
     @Override
     public void setup(S identityStore) {
-        super.setup(identityStore);
-        // here you can initialize the handler with any properties provided during the configuration.
     }
 
     @Override
-    protected boolean validateCredential(CredentialStorage credentialStorage, TokenCredential credentials) {
-        TokenCredentialStorage tokenStorage = (TokenCredentialStorage) credentialStorage;
+    public void validate(IdentityContext context, V credentials, S store) {
+        credentials.setStatus(Credentials.Status.INVALID);
 
-        if (credentials.getToken() != null) {
-            return tokenStorage.getId().equals(credentials.getToken().getId());
+        Account account = getAccount(context, credentials);
+
+        if (account != null) {
+            if (account.isEnabled()) {
+                TokenCredentialStorage storage = store.retrieveCurrentCredential(context, account, TokenCredentialStorage.class);
+
+                if (storage.getToken().equals(credentials.getToken())) {
+                    credentials.setStatus(Credentials.Status.VALID);
+                    credentials.setValidatedAccount(account);
+                }
+            } else {
+                credentials.setStatus(Credentials.Status.ACCOUNT_DISABLED);
+            }
+        }
+    }
+
+    @Override
+    public void update(IdentityContext context, Account account, Token credential, @SuppressWarnings("rawtypes") CredentialStore store, Date effectiveDate, Date expiryDate) {
+        TokenCredentialStorage tokenStorage = new TokenCredentialStorage();
+
+        tokenStorage.setToken(credential.getToken());
+
+        if (effectiveDate != null) {
+            tokenStorage.setEffectiveDate(effectiveDate);
         }
 
-        return false;
+        tokenStorage.setExpiryDate(expiryDate);
+
+        store.storeCredential(context, account, tokenStorage);
     }
 
-    @Override
-    protected Account getAccount(IdentityContext context, TokenCredential credentials) {
+    private Account getAccount(IdentityContext context, TokenCredential credentials) {
         IdentityManager identityManager = getIdentityManager(context);
         IdentityQuery<MyUser> query = identityManager.createIdentityQuery(MyUser.class);
-        Token token = credentials.getToken();
+        JWS token = validateToken(context, credentials);
 
-        query.setParameter(MyUser.ID, token.getUserId());
+        query.setParameter(MyUser.ID, token.getSubject());
 
         List<MyUser> result = query.getResultList();
 
@@ -77,25 +102,22 @@ public class TokenCredentialHandler<S extends CredentialStore<?>, V extends Toke
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-	@Override
-    protected CredentialStorage getCredentialStorage(IdentityContext context, Account account, TokenCredential credentials, @SuppressWarnings("rawtypes") CredentialStore store) {
-        return store.retrieveCurrentCredential(context, account, TokenCredentialStorage.class);
+    private JWS validateToken(IdentityContext context, TokenCredential credentials) {
+        return new JWSBuilder().build(credentials.getToken(), getPublicKey(context));
     }
 
-    @Override
-    public void update(IdentityContext context, Account account, Token credential, @SuppressWarnings("rawtypes") CredentialStore store, Date effectiveDate, Date expiryDate) {
-        TokenCredentialStorage tokenStorage = new TokenCredentialStorage();
+    private IdentityManager getIdentityManager(IdentityContext context) {
+        IdentityManager identityManager = context.getParameter(IdentityManager.IDENTITY_MANAGER_CTX_PARAMETER);
 
-        tokenStorage.setUserId(account.getId());
-        tokenStorage.setId(credential.getId());
-
-        if (effectiveDate != null) {
-            tokenStorage.setEffectiveDate(effectiveDate);
+        if (identityManager == null) {
+            throw new IdentityManagementException("IdentityManager not set into context.");
         }
 
-        tokenStorage.setExpiryDate(expiryDate);
+        return identityManager;
+    }
 
-        store.storeCredential(context, account, tokenStorage);
+    private byte[] getPublicKey(IdentityContext context) {
+        Partition partition = context.getPartition();
+        return partition.<byte[]>getAttribute("PublicKey").getValue();
     }
 }

@@ -98,20 +98,22 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
     
     $scope.dologin = function (userData) {
 	
-	// clear the token and the email.
-	$scope.clearToken();
-	
+        // clear the token and the email.
+        $scope.clearToken();
+
         if (userData.userId != undefined && userData.password != undefined) {
-            
             UserService.username = userData.userId;
             
             SessionResource.login(userData, function (data) {
         	    
         	    UserService.isLogged = true;
                     UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
-                    
+
+                    UserService.isLogged = true;
+                    UserService.token = data.token;
+
                     // persist token, user id to the storage
-                    sessionStorage.setItem('token', JSON.stringify(data));
+                    sessionStorage.setItem('token', data.token);
                     
                     $location.path( "/home" );
                 }, function (err) {
@@ -173,7 +175,7 @@ function SignupCtrl($scope, $http, UsersResource, UserService, $q, $location, $t
     };
 }
 
-function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, $q, $location, $timeout) {
+function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, SignatureUtil, $q, $location, $timeout) {
 
     var ac = $routeParams.activationCode;
     
@@ -183,12 +185,11 @@ function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService,
     // and displays any error messages
     $scope.activate = function() {
         UsersResource.activation(JSON.stringify(ac), function(data) {
-
             UserService.isLogged = true;
-            UserService.token = JSON.stringify(data);
-            
+            UserService.token = data.token;
+
             // persist token, user id to the storage
-            sessionStorage.setItem('token', JSON.stringify(data));
+            sessionStorage.setItem('token', data.token);
             
             $location.path( "/home" );
         }, function(result) {

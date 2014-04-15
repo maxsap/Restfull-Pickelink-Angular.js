@@ -21,7 +21,6 @@
  */
 package com.gr.project.security;
 
-import com.gr.project.security.credential.Token;
 import org.picketlink.authentication.event.PostLoggedOutEvent;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Account;
@@ -41,12 +40,15 @@ public class LogoutHandler {
     @Inject
     private UserTransaction transaction;
 
+    @Inject
+    private TokenManager tokenManager;
+
     public void onAfterLogout(@Observes PostLoggedOutEvent event) throws Exception {
         this.transaction.begin();
 
         Account account = event.getAccount();
 
-        this.identityManager.updateCredential(account, Token.create(account));
+        this.identityManager.updateCredential(account, this.tokenManager.issue(account));
 
         this.transaction.commit();
     }

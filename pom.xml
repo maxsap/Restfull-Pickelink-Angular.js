@@ -153,6 +153,11 @@
 			<artifactId>picketlink-idm-simple-schema</artifactId>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.picketlink</groupId>
+			<artifactId>picketlink-json</artifactId>
+			<scope>compile</scope>
+		</dependency>
 
         <!-- Apache DeltaSpike dependencies -->
 		<dependency>

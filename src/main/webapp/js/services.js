@@ -58,28 +58,34 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 	
 angular.module("SignatureUtil", [])
 .service("SignatureUtil", function() {
-    var signer = function() {
-				 
-	var hmacKey = "hmackey";
-	
-	this.generateSignature = function(joeStr, hs256) {
-	    
-	    var token = new jwt.WebToken(joeStr, hs256);
-	    var signed = token.serialize(hmacKey)
-	    var split = signed.split("\.")
-		    
-	    return split;
+    var jws = function() {
+	    var hmacKey = "hmackey";
+
+        this.generateSignature = function(joeStr, hs256) {
+
+            var token = new jwt.WebToken(joeStr, hs256);
+            var signed = token.serialize(hmacKey)
+            var split = signed.split("\.")
+
+            return split;
         };
-        
+
         this.verifySignature = function(signature) {
             var token = jwt.WebTokenParser.parse(signature);
             return token.verify(hmacKey);
         };
+
+        this.getClaims = function(jwsEncoded) {
+            console.log("claims:" + jwsEncoded.split(".")[1]);
+            var claims = atob(jwsEncoded.split(".")[1]);
+            console.log(claims);
+            return claims;
+        };
     }
-		
+
     return {
         getInstance: function () {
-          return new signer();
+          return new jws();
         }
     };
 });

@@ -21,75 +21,18 @@
  */
 package com.gr.project.security.credential;
 
-import org.picketlink.idm.model.Account;
-
-import javax.json.Json;
-import javax.json.JsonObject;
-import javax.json.JsonReader;
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.StringReader;
-import java.util.UUID;
-
 /**
- * <p>This class represents the concept of a token. For now we're using a String-based token.</p>
- *
- * <p>The reason why we have a specific type is to support future changes to the token structure, so we can
- * store more data related with it.</p>
- *
  * @author Pedro Igor
  */
-@XmlRootElement
 public class Token {
 
-    private String userId;
-    private String id;
+    private final String token;
 
-    public static Token fromRequest(HttpServletRequest request) {
-        Token token = null;
-        String header = request.getHeader("x-session-token");
-
-        if (header != null && !header.isEmpty()) {
-            JsonReader reader = null;
-
-            try {
-                reader = Json.createReader(new StringReader(header));
-                JsonObject json = reader.readObject();
-
-                token = new Token();
-
-                token.setId(json.getString("id"));
-                token.setUserId(json.getString("userId"));
-            } finally {
-                reader.close();
-            }
-        }
-
-        return token;
+    public Token(String token) {
+        this.token = token;
     }
 
-    public static Token create(Account account) {
-        Token token = new Token();
-
-        token.setId(UUID.randomUUID().toString());
-        token.setUserId(account.getId());
-
-        return token;
-    }
-
-    public String getId() {
-        return this.id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUserId() {
-        return this.userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getToken() {
+        return this.token;
     }
 }
