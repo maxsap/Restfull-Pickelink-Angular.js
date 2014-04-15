@@ -77,7 +77,6 @@ public class SessionService {
     @Path("/login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(@NotNull DefaultLoginCredentials credential) {
-
         Map<String, Object> response = new HashMap<String, Object>();
 
         try {

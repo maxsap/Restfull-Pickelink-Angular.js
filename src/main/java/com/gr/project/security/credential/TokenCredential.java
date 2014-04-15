@@ -19,17 +19,13 @@ package com.gr.project.security.credential;
 import org.picketlink.idm.credential.AbstractBaseCredentials;
 
 /**
- * <p>A simple credential that uses a token as a credential.</p>
+ * <p>A simple credential that uses a jws as a credential.</p>
  */
 public class TokenCredential extends AbstractBaseCredentials {
 
-    private Token token;
+    private String token;
 
-    public TokenCredential() {
-        this(null);
-    }
-
-    public TokenCredential(Token token) {
+    public TokenCredential(String token) {
         this.token = token;
     }
 
@@ -38,11 +34,7 @@ public class TokenCredential extends AbstractBaseCredentials {
         this.token = null;
     }
 
-    public Token getToken() {
+    public String getToken() {
         return this.token;
-    }
-
-    public void setToken(Token token) {
-        this.token = token;
     }
 }

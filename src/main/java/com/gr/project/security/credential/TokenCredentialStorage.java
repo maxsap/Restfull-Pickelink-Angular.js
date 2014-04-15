@@ -29,34 +29,14 @@ import org.picketlink.idm.credential.storage.annotations.Stored;
  */
 public class TokenCredentialStorage extends AbstractCredentialStorage {
 
-    private String id;
-    private String userId;
+    private String token;
 
     @Stored
-    public String getId() {
-        return this.id;
+    public String getToken() {
+        return this.token;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setToken(String token) {
+        this.token = token;
     }
-
-    @Stored
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
-
-    public Token getToken() {
-        Token token = new Token();
-
-        token.setId(this.id);
-        token.setUserId(this.userId);
-
-        return token;
-    }
-
 }

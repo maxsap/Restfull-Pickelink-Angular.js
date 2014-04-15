@@ -22,11 +22,11 @@
 
 package com.gr.project.security;
 
-import static com.gr.project.security.credential.Token.fromRequest;
-
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import com.gr.project.security.credential.TokenCredential;
+import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import org.apache.deltaspike.security.api.authorization.SecurityViolation;
+import org.picketlink.Identity;
+import org.picketlink.credential.DefaultLoginCredentials;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -38,14 +38,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
-import org.apache.deltaspike.security.api.authorization.SecurityViolation;
-import org.picketlink.Identity;
-import org.picketlink.credential.DefaultLoginCredentials;
-
-import com.gr.project.security.credential.Token;
-import com.gr.project.security.credential.TokenCredential;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * <p>This filter is responsible to examine the {@link javax.servlet.http.HttpServletRequest} for a token. The token is used
@@ -63,6 +58,9 @@ public class AuthenticationFilter implements Filter {
     @Inject
     private DefaultLoginCredentials credentials;
 
+    @Inject
+    private CertificateManager certificateManager;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         // to configure which resources should be protected, see the AuthorizationManager class.
@@ -74,7 +72,7 @@ public class AuthenticationFilter implements Filter {
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
         if (!this.identity.isLoggedIn()) {
-            Token token = fromRequest(httpRequest);
+            String token = httpRequest.getHeader("x-session-token");
 
             if (token != null) {
                 TokenCredential tokenCredential = new TokenCredential(token);

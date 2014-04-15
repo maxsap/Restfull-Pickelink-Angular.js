@@ -55,19 +55,12 @@ var appModule = angular.module('PLAngular',
 	    return {
 		'request' : function(config) {
 		    var token = sessionStorage.getItem('token');
-		    if(token != null && token != '')
-			config.headers['x-session-token'] = token;
-		    
-			var str = "{\"iss\":\"joe\",\r\n" + $location + ":true}";
-			
-			// XXX this should come from the API
-			var hs256 = "{\"typ\":\"JWT\",\r\n"+
-						 " \"alg\":\"HS256\"}";
-			
-			var res = SignatureUtil.getInstance().generateSignature(str, hs256);
-			console.log(res);
+
+            if(token != null && token != '') {
+                config.headers['x-session-token'] = token;
+            }
+
 			// XXX Token validation should be here
-		    
 		    return config || $q.when(config);
 		},
 
@@ -79,13 +72,6 @@ var appModule = angular.module('PLAngular',
 		    if (response.status === 401) {
 				$location.path('/');
 		    }
-		    
-		    var str = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJqb2UiLA0KW29iamVjdCBPYmplY3RdOnRydWV9.cOSM-mAHSz1DetLSO5X3My62LZU2cMMlm06f1kuc2tY";
-		    // XXX read the actual value from the response and decode it!
-		    var res = SignatureUtil.getInstance().verifySignature(str);
-		    console.log(res);
-		    // XXX check verification status
-		    
 		    return response || $q.when(response);
 		},
 		

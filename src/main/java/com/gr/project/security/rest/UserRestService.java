@@ -4,6 +4,7 @@ import com.gr.project.data.PersonDAO;
 import com.gr.project.data.PersonListProducer;
 import com.gr.project.model.Email;
 import com.gr.project.model.Person;
+import com.gr.project.security.TokenManager;
 import com.gr.project.security.UserLoggedIn;
 import com.gr.project.security.credential.Token;
 import com.gr.project.security.model.MyUser;
@@ -39,6 +40,9 @@ public class UserRestService {
     @Inject
     @Named("default.return.message.parameter")
     private String MESSAGE_RESPONSE_PARAMETER;
+
+    @Inject
+    private TokenManager tokenManager;
 
     @Inject
     private IdentityManager identityManager;
@@ -120,7 +124,6 @@ public class UserRestService {
 
     @POST
     @Path("/activation")
-    @Produces(MediaType.APPLICATION_JSON)
     public Response memberActivation(@NotNull String activationCode) {
 
         IdentityQuery<MyUser> query = this.identityManager.createIdentityQuery(MyUser.class);
@@ -137,19 +140,23 @@ public class UserRestService {
         boolean enabled = user.isEnabled();
 
         if (enabled) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE)
-                .build();
+//            return Response.status(Response.Status.BAD_REQUEST).entity("User Already Active").type(MediaType.APPLICATION_JSON_TYPE)
+//                .build();
         }
 
         user.setEnabled(true);
 
         this.identityManager.update(user);
 
-        Token token = Token.create(user);
+        Token token = this.tokenManager.issue(user);
 
         this.identityManager.updateCredential(user, token);
 
-        return Response.status(Response.Status.OK).entity(token).type(MediaType.APPLICATION_JSON_TYPE).build();
+        Map<String, String> map = new HashMap<String, String>();
+
+        map.put("token", token.getToken());
+
+        return Response.status(Response.Status.OK).entity(map).type(MediaType.APPLICATION_JSON_TYPE).build();
     }
 
     private String createAccount(RegistrationRequest request) {

@@ -21,14 +21,10 @@
  */
 package com.gr.project.security;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
+import com.gr.project.security.credential.TokenCredentialHandler;
 import com.gr.project.security.model.MyUser;
+import com.gr.project.security.model.entity.MyUserTypeEntity;
+import com.gr.project.security.model.entity.TokenCredentialTypeEntity;
 import org.picketlink.IdentityConfigurationEvent;
 import org.picketlink.annotations.PicketLink;
 import org.picketlink.idm.config.IdentityConfigurationBuilder;
@@ -43,9 +39,13 @@ import org.picketlink.idm.jpa.model.sample.simple.RelationshipTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.RoleTypeEntity;
 import org.picketlink.internal.EEJPAContextInitializer;
 
-import com.gr.project.security.credential.TokenCredentialHandler;
-import com.gr.project.security.credential.TokenCredentialTypeEntity;
-import com.gr.project.security.model.entity.MyUserTypeEntity;
+import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.event.Observes;
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.UserTransaction;
 
 /**
  * @author Pedro Igor
@@ -60,6 +60,9 @@ public class SecurityConfiguration {
 
     @Inject
     private EEJPAContextInitializer contextInitializer;
+
+    @Inject
+    private UserTransaction userTransaction;
 
     public void configureIdentityManagement(@Observes IdentityConfigurationEvent event) {
         IdentityConfigurationBuilder builder = event.getConfig();
@@ -84,5 +87,4 @@ public class SecurityConfiguration {
                         .setCredentialHandlerProperty(PasswordCredentialHandler.SUPPORTED_ACCOUNT_TYPES_PROPERTY, MyUser.class)
                         .supportAllFeatures();
     }
-
 }
