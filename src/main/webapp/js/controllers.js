@@ -35,10 +35,16 @@ function HomeCtrl($scope, UsersResource, $location, SessionResource, SecuritySer
 	    });
     };
     
-    $scope.activate = function(rowData) {
-	    AdminResource.activate(rowData.user, function(resp) {
+    $scope.enableAccount = function(rowData) {
+	    AdminResource.enableAccount(rowData.user, function(resp) {
             MessageService.setMessages(resp.message)
 	    });
+    };
+
+    $scope.disableAccount = function(rowData) {
+        AdminResource.disableAccount(rowData.user, function(resp) {
+            MessageService.setMessages(resp.message)
+        });
     };
 
     // Call the refresh() function, to populate the list of members
