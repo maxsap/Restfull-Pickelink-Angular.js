@@ -21,16 +21,14 @@
  */
 package com.gr.project.rest;
 
-import com.gr.project.security.authentication.credential.Token;
-
-import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * @author Pedro Igor
@@ -56,8 +54,9 @@ public class MessageBuilder {
         return new MessageBuilder(Response.ok());
     }
 
+    @SuppressWarnings("unchecked")
     public MessageBuilder message(String... message) {
-        List<String> actualMessages = (List<String>) this.messageData.get(MESSAGE_PARAMETER);
+		List<String> actualMessages = (List<String>) this.messageData.get(MESSAGE_PARAMETER);
 
         if (actualMessages == null) {
             actualMessages = new ArrayList<String>();

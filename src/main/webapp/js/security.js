@@ -36,6 +36,11 @@ angular.module('PicketLinkSecurity', ['ngResource', 'ngRoute']).config(
             logout: {method: 'POST', params: {dest:"logout"}}
         });
     }])
+     .factory('AdminResource', ['$resource', function($resource) {
+        return $resource('rest/admin/:dest', {}, {
+            activate: {method: 'POST', params: {dest:"activate"}},
+        });
+    }])
     .factory('UsersResource', ['$resource', function($resource) {
         return $resource('rest/users/:dest', {}, {});
     }])

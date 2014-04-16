@@ -9,6 +9,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>REST URL</th>
+            <th>Activate User</th>
         </tr>
     </thead>
     <!-- The table is built using the AngularJS repeat function, iterating over the members variable, and ordering by the property specified in the orderBy variable -->
@@ -16,8 +17,8 @@
         <td>{{user.id}}</td>
         <td>{{user.name}}</td>
         <td>{{user.email}}</td>
-        <td><a href="rest/users/{{user.id}}">/rest/users/{{user.id}}</a>
-        </td>
+        <td> <a href="rest/users/{{user.id}}">/rest/users/{{user.id}}</a> </td>
+        <td> <input type="button" ng-click="activate(this)" name="activate" id="activate" value="activate" /> </td>
 </table>
 <div>
     <!-- The table has a button to manually refresh the values, in case, for example, someone else adds a user -->

@@ -21,18 +21,7 @@
  */
 package com.gr.project.security.service;
 
-import com.gr.project.model.Email;
-import com.gr.project.model.Person;
-import com.gr.project.rest.MessageBuilder;
-import com.gr.project.security.authentication.TokenManager;
-import com.gr.project.security.authentication.credential.Token;
-import com.gr.project.security.model.MyUser;
-import com.gr.project.security.model.Registration;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.IdentityType;
-import org.picketlink.idm.query.IdentityQuery;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -45,8 +34,26 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
-import java.util.UUID;
+
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.PartitionManager;
+import org.picketlink.idm.RelationshipManager;
+import org.picketlink.idm.credential.Password;
+import org.picketlink.idm.model.Attribute;
+import org.picketlink.idm.model.IdentityType;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.Group;
+import org.picketlink.idm.model.basic.Role;
+import org.picketlink.idm.query.IdentityQuery;
+
+import com.gr.project.model.Email;
+import com.gr.project.model.Person;
+import com.gr.project.rest.MessageBuilder;
+import com.gr.project.security.authentication.TokenManager;
+import com.gr.project.security.authentication.credential.Token;
+import com.gr.project.security.model.ApplicationRole;
+import com.gr.project.security.model.MyUser;
+import com.gr.project.security.model.Registration;
 
 /**
  * <p>RESTFul endpoint responsible for:</p>
@@ -78,6 +85,9 @@ public class RegistrationService {
 
     @Inject
     private TokenManager tokenManager;
+    
+    @Inject
+    private PartitionManager partitionManager;
 
     @Inject
     @Any
@@ -166,6 +176,35 @@ public class RegistrationService {
         Password password = new Password(request.getPassword());
 
         this.identityManager.updateCredential(newUser, password);
+        
+        /////////////////////////////////////////////////////////////////////////////////////////
+        Role adminRole = new Role(ApplicationRole.ADMINISTRATOR.toString());
+
+        // stores the admin role
+        identityManager.add(adminRole);
+
+        Group adminGroup = new Group("Administrators");
+
+        // stores the admin group
+        identityManager.add(adminGroup);
+
+        RelationshipManager relationshipManager = this.partitionManager.createRelationshipManager();
+
+        // grants to the admin user the admin role
+        BasicModel.grantRole(relationshipManager, newUser, adminRole);
+        
+        // add the admin user to the admin group
+        BasicModel.addToGroup(relationshipManager, newUser, adminGroup);
+        
+        Role userRole = new Role("User");
+        
+        identityManager.add(userRole);
+        
+        Group usersGroup = new Group("Users");
+        
+        identityManager.add(usersGroup);
+        
+        //////////////////////////////////////////////////////////////////////////////////////////
 
         return activationCode;
     }

@@ -22,18 +22,12 @@
 
 package com.gr.project.security.authorization;
 
-import com.gr.project.security.authorization.annotation.UserLoggedIn;
-import com.gr.project.security.model.ApplicationRole;
-import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
-import org.apache.deltaspike.security.api.authorization.Secures;
-import org.picketlink.Identity;
-import org.picketlink.Identity.Stateless;
-import org.picketlink.credential.DefaultLoginCredentials;
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.model.Account;
-import org.picketlink.idm.model.basic.BasicModel;
-import org.picketlink.idm.model.basic.Role;
+import static org.picketlink.idm.model.basic.BasicModel.getRole;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -43,12 +37,19 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.interceptor.InvocationContext;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
-import static org.picketlink.idm.model.basic.BasicModel.getRole;
+import org.apache.deltaspike.security.api.authorization.AccessDeniedException;
+import org.apache.deltaspike.security.api.authorization.Secures;
+import org.picketlink.Identity;
+import org.picketlink.Identity.Stateless;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.RelationshipManager;
+import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.basic.BasicModel;
+import org.picketlink.idm.model.basic.Role;
+
+import com.gr.project.security.authorization.annotation.UserLoggedIn;
+import com.gr.project.security.model.ApplicationRole;
 
 /**
  * <p>
@@ -71,17 +72,12 @@ public class AuthorizationManager {
     @Stateless
     private Identity identity;
     
-    @Inject
-    private DefaultLoginCredentials credentials;
 
     @Inject
     private Instance<IdentityManager> identityManager;
 
     @Inject
     private Instance<RelationshipManager> relationshipManager;
-
-    @Inject
-    private Instance<HttpServletRequest> request;
 
     @PostConstruct
     public void init() {
@@ -245,6 +241,9 @@ public class AuthorizationManager {
     public boolean hasRole(String roleName) {
         Account account = getIdentity().getAccount();
         Role role = getRole(this.identityManager.get(), roleName);
+        
+        if(role == null)
+        	return false;
 
         return BasicModel.hasRole(this.relationshipManager.get(), account, role);
     }

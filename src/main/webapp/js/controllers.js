@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function HomeCtrl($scope, UsersResource, $location, SessionResource, SecurityService) {
+function HomeCtrl($scope, UsersResource, $location, SessionResource, SecurityService, AdminResource) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -32,6 +32,12 @@ function HomeCtrl($scope, UsersResource, $location, SessionResource, SecuritySer
 	    SessionResource.logout(function(resp) {
             SecurityService.endSession();
 	        $location.path( "/login" );
+	    });
+    };
+    
+    $scope.activate = function(rowData) {
+	    AdminResource.activate(rowData.user, function(resp) {
+    	        $location.path( "/login" );
 	    });
     };
 

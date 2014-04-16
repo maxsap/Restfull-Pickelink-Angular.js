@@ -1,10 +1,6 @@
 package com.gr.project.security.service;
 
-import com.gr.project.data.PersonDAO;
-import com.gr.project.data.PersonListProducer;
-import com.gr.project.model.Person;
-import com.gr.project.security.authorization.annotation.UserLoggedIn;
-import org.picketlink.idm.IdentityManager;
+import java.util.List;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -16,7 +12,11 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.List;
+
+import com.gr.project.data.PersonDAO;
+import com.gr.project.data.PersonListProducer;
+import com.gr.project.model.Person;
+import com.gr.project.security.authorization.annotation.UserLoggedIn;
 
 @Path("/users")
 @Stateless
@@ -27,9 +27,6 @@ public class UserRestService {
     @Named("default.return.message.parameter")
     private String MESSAGE_RESPONSE_PARAMETER;
 
-    @Inject
-    private IdentityManager identityManager;
-    
     @Inject
     private PersonListProducer persons;
 
