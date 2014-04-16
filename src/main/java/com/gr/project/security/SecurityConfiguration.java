@@ -21,13 +21,15 @@
  */
 package com.gr.project.security;
 
-import com.gr.project.security.credential.TokenCredentialHandler;
+import com.gr.project.security.authentication.credential.TokenCredentialHandler;
 import com.gr.project.security.model.MyUser;
 import com.gr.project.security.model.entity.MyUserTypeEntity;
 import com.gr.project.security.model.entity.TokenCredentialTypeEntity;
 import org.picketlink.IdentityConfigurationEvent;
-import org.picketlink.annotations.PicketLink;
+import org.picketlink.PartitionManagerCreateEvent;
+import org.picketlink.idm.PartitionManager;
 import org.picketlink.idm.config.IdentityConfigurationBuilder;
+import org.picketlink.idm.config.SecurityConfigurationException;
 import org.picketlink.idm.credential.handler.PasswordCredentialHandler;
 import org.picketlink.idm.jpa.model.sample.simple.AttributeTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.GroupTypeEntity;
@@ -37,32 +39,30 @@ import org.picketlink.idm.jpa.model.sample.simple.PasswordCredentialTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.RelationshipIdentityTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.RelationshipTypeEntity;
 import org.picketlink.idm.jpa.model.sample.simple.RoleTypeEntity;
+import org.picketlink.idm.model.Attribute;
+import org.picketlink.idm.model.basic.Realm;
 import org.picketlink.internal.EEJPAContextInitializer;
 
-import javax.enterprise.context.ApplicationScoped;
+import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.transaction.UserTransaction;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
 
 /**
  * @author Pedro Igor
  */
-@ApplicationScoped
+@Stateless
 public class SecurityConfiguration {
 
-    @PersistenceContext
-    @Produces
-    @PicketLink
-    private EntityManager entityManager;
+    public static final String KEYSTORE_FILE_PATH = "/keystore.jks";
+
+    private KeyStore keyStore;
 
     @Inject
     private EEJPAContextInitializer contextInitializer;
-
-    @Inject
-    private UserTransaction userTransaction;
 
     public void configureIdentityManagement(@Observes IdentityConfigurationEvent event) {
         IdentityConfigurationBuilder builder = event.getConfig();
@@ -87,4 +87,44 @@ public class SecurityConfiguration {
                         .setCredentialHandlerProperty(PasswordCredentialHandler.SUPPORTED_ACCOUNT_TYPES_PROPERTY, MyUser.class)
                         .supportAllFeatures();
     }
+
+    public void configureDefaultPartition(@Observes PartitionManagerCreateEvent event) {
+        PartitionManager partitionManager = event.getPartitionManager();
+        Realm partition = partitionManager.getPartition(Realm.class, Realm.DEFAULT_REALM);
+
+        if (partition == null) {
+            try {
+                partition = new Realm(Realm.DEFAULT_REALM);
+
+                partition.setAttribute(new Attribute<byte[]>("PublicKey", getPublicKey()));
+                partition.setAttribute(new Attribute<byte[]>("PrivateKey", getPrivateKey()));
+
+                partitionManager.add(partition);
+            } catch (Exception e) {
+                throw new SecurityConfigurationException("Could not create default partition.", e);
+            }
+        }
+    }
+
+    private byte[] getPrivateKey() throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        return getKeyStore().getKey("servercert", "test123".toCharArray()).getEncoded();
+    }
+
+    private byte[] getPublicKey() throws KeyStoreException {
+        return getKeyStore().getCertificate("servercert").getPublicKey().getEncoded();
+    }
+
+    private KeyStore getKeyStore() {
+        if (this.keyStore == null) {
+            try {
+                this.keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                getKeyStore().load(getClass().getResourceAsStream(KEYSTORE_FILE_PATH), "store123".toCharArray());
+            } catch (Exception e) {
+                throw new SecurityException("Could not load key store.", e);
+            }
+        }
+
+        return this.keyStore;
+    }
+
 }

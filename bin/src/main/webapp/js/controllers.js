@@ -83,7 +83,7 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
         if (userData.userId != undefined && userData.password != undefined) {
             
             UserService.username = userData.userId;
-            
+
             SessionResource.login(userData, function (data) {
         	    console.log("Auth");
         	    UserService.isLogged = true;
@@ -98,9 +98,8 @@ function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResou
     
     // when user whant's to sign-up for the service
     $scope.redirectoToSignUp = function() {
-	$location.path( "/signup" );
-    };
-
+	    $location.path( "/signup" );
+    }
 }
 
 

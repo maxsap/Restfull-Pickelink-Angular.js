@@ -26,7 +26,7 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 }])
 .factory('SessionResource', ['$resource', function($resource) {
 
-    return $resource('rest/session/:dest', {}, {
+    return $resource('service/session/:dest', {}, {
   	login: {method: 'POST', params: {dest:"login"}},
   	logout: {method: 'POST', params: {dest:"login"}}
     });
@@ -36,7 +36,7 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 .factory('UsersResource', ['$resource', function($resource) {
 
   // Easy way to template urls and reuse them later
-  return $resource('rest/users/:dest', {}, {
+  return $resource('service/users/:dest', {}, {
 	registration: {method: 'POST', params: {dest:"registration"}},
 	activation: {method: 'POST', params: {dest:"activation"}}
   });
@@ -58,5 +58,5 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 
 //angular.module('membersService', ['ngResource', 'ngRoute']).
 //factory('Members', function($resource){
-//    return $resource('rest/members:memberId', {});
+//    return $resource('service/members:memberId', {});
 //});

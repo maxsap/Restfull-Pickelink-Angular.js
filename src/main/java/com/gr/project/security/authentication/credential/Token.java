@@ -19,36 +19,20 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security.model.entity;
-
-import com.gr.project.security.authentication.credential.TokenCredentialStorage;
-import org.picketlink.idm.jpa.annotations.CredentialProperty;
-import org.picketlink.idm.jpa.annotations.entity.ManagedCredential;
-import org.picketlink.idm.jpa.model.sample.simple.AbstractCredentialTypeEntity;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
+package com.gr.project.security.authentication.credential;
 
 /**
- * <p>{@link javax.persistence.Entity} representing a {@link com.gr.project.security.authentication.credential.Token}.</p>
- *
  * @author Pedro Igor
  */
-@ManagedCredential(TokenCredentialStorage.class)
-@Entity
-public class TokenCredentialTypeEntity extends AbstractCredentialTypeEntity {
+public class Token {
 
-	private static final long serialVersionUID = 3208265179514358055L;
+    private final String token;
 
-	@CredentialProperty
-    @Column(columnDefinition = "TEXT")
-    private String token;
+    public Token(String token) {
+        this.token = token;
+    }
 
     public String getToken() {
         return this.token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 }

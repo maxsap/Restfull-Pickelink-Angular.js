@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout, SessionResource) {
+function HomeCtrl($scope, UsersResource, $location, SessionResource, SecurityService) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -28,55 +28,11 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
         $scope.newUser = {};
     };
 
-    $scope.register = function() {
-        $scope.successMessages = '';
-        $scope.errorMessages = '';
-        $scope.errors = {};
-        
-        if($scope.newUser.password != $scope.newUser.passwordConfirmation) {
-    		$scope.errors = {passwordConfirmation : "Password Mismatch !!!"};
-    		return;
-        }
-
-        UsersResource.save($scope.newUser, function(data) {
-
-            // mark success on the registration form
-            $scope.successMessages = [ 'User Registered' ];
-
-            // mark success on the registration form
-            $scope.successMessages = [ 'Member Registered' ];
-
-            // Update the list of members
-            $scope.refresh();
-
-            // Clear the form
-            $scope.reset();
-        }, function(result) {
-            if ((result.status == 409) || (result.status == 400)) {
-                $scope.errors = result.data;
-            } else {
-                $scope.errorMessages = result.data;
-            }
-            $scope.$apply();
-        });
-
-    };
-    
-    $scope.clearToken = function() {
-	UserService.token = null;
-	
-	// clean up storage
-        sessionStorage.removeItem('token');
-    }
-    
-    
     $scope.logout = function() {
-	SessionResource.logout(function(resp) {
-	    $scope.clearToken();
-	    $location.path( "/login" );
-	}, function(err) {
-	    console.log(err.data.message);
-	});
+	    SessionResource.logout(function(resp) {
+            SecurityService.endSession();
+	        $location.path( "/login" );
+	    });
     };
 
     // Call the refresh() function, to populate the list of members
@@ -88,118 +44,4 @@ function HomeCtrl($scope, $http, UsersResource, UserService, $q, $location, $tim
 
     // Set the default orderBy to the name property
     $scope.orderBy = 'name';
-}
-
-function LoginCtrl(Product, $rootScope, $scope, $http, UserService, SessionResource, $location, $q, SignatureUtil) {
-    
-    /**
-     * Save a person. Make sure that a person object is present before calling the service.
-     */
-    
-    $scope.dologin = function (userData) {
-	
-        // clear the token and the email.
-        $scope.clearToken();
-
-        if (userData.userId != undefined && userData.password != undefined) {
-            UserService.username = userData.userId;
-            
-            SessionResource.login(userData, function (data) {
-        	    
-        	    UserService.isLogged = true;
-                    UserService.token = JSON.stringify(data); // use Base64 to encode/decode the token.
-
-                    UserService.isLogged = true;
-                    UserService.token = data.token;
-
-                    // persist token, user id to the storage
-                    sessionStorage.setItem('token', data.token);
-                    
-                    $location.path( "/home" );
-                }, function (err) {
-                    console.log(err.data.message);
-                }
-            );
-        }
-    };
-    
-    // when user whant's to sign-up for the service
-    $scope.redirectoToSignUp = function() {
-	$location.path( "/signup" );
-    };
-    
-    $scope.clearToken = function() {
-	UserService.token = null;
-	UserService.username = null;
-	
-	// clean up storage
-	sessionStorage.removeItem('token');
-    }
-
-}
-
-
-function SignupCtrl($scope, $http, UsersResource, UserService, $q, $location, $timeout) {
-
-    /*
-     * Define a register function, which adds the member using the REST service,
-     * and displays any error messages.
-     * Shows a different way to get form data
-     */ 
-
-    $scope.register = function() {
-        $scope.successMessages = '';
-        $scope.errorMessages = '';
-        $scope.errors = {};
-        
-        if($scope.newUser.password != $scope.newUser.passwordConfirmation) {
-    		$scope.errors = {passwordConfirmation : "Password Mismatch !!!"};
-    		return;
-        }
-
-        UsersResource.save($scope.newUser, function(data) {
-
-            // mark success on the registration form
-            $scope.successMessages = [ 'User Registered' ];
-
-            $location.path( "/" );
-        }, function(result) {
-            if ((result.status == 409) || (result.status == 400)) {
-                $scope.errors = result.data;
-            } else {
-                $scope.errorMessages = result.data;
-            }
-            $scope.$apply();
-        });
-
-    };
-}
-
-function ActivationCtrl($scope, $http, $routeParams, UsersResource, UserService, SignatureUtil, $q, $location, $timeout) {
-
-    var ac = $routeParams.activationCode;
-    
-    UserService.username = $routeParams.username;
-    
-    // Define a register function, which adds the member using the REST service,
-    // and displays any error messages
-    $scope.activate = function() {
-        UsersResource.activation(JSON.stringify(ac), function(data) {
-            UserService.isLogged = true;
-            UserService.token = data.token;
-
-            // persist token, user id to the storage
-            sessionStorage.setItem('token', data.token);
-            
-            $location.path( "/home" );
-        }, function(result) {
-            // if the activation fails for any reason, redirect to login
-            // XXX add check and is the activation fails due to user already active, then redirect to home
-            
-            $location.path( "/login" );
-        });
-
-    };
-    
-    $scope.activate();
 }

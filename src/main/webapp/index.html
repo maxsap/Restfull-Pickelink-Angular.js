@@ -1,42 +1,31 @@
-<!--
-    JBoss, Home of Professional Open Source
-    Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
-    contributors by the @authors tag. See the copyright.txt in the
-    distribution for a full listing of individual contributors.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
--->
 <!DOCTYPE html>
 <html lang="en" ng-app="PLAngular" ng-csp>
 <head>
-    <title>PL Angular test</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="css/screen.css" type="text/css" />
-    
-    <!-- Load angularjs from CDN-->
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.min.js"></script>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular-route.js"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-    <!-- Load angularjs-resource, which allows us to interact with REST resources as high level services -->
-    <script src="js/libs/angular-resource.js"></script>
-    
-    <script src="js/libs/localStorageModule.js"></script>
-    
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Load CSS-->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/animations.css" rel="stylesheet" type="text/css">
+    <link href="css/starter-template.css" rel="stylesheet">
+
+    <!-- Load AngularJS -->
+    <script src="js/libs/angular/angular.min.js"></script>
+    <script src="js/libs/angular/angular-resource.min.js"></script>
+    <script src="js/libs/angular/angular-route.min.js"></script>
+
     <!-- Load the application wide JS, such as route definitions -->
     <script src="js/app.js"></script>
-    
+    <script src="js/security.js"></script>
+
     <!-- Load the controllers for our app -->
     <script src="js/controllers.js"></script>
-    
+
     <!-- Load the services we have defined for the application, particularly the REST services -->
     <script src="js/services.js"></script>
 
@@ -44,38 +33,49 @@
     <script src="js/libs/security/jwt.js"></script>
 
     <script src="partials/login.html"></script>
-    
 </head>
 <body>
-    <aside id="container">
-        <div class="dualbrand">
-            <img src="gfx/dualbrand_logo.png" />
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="#">Project name</a>
         </div>
-        <div id="content" ng-view>
-            <!-- This div will be tempalted by AngularJS -->
-            [Template content will be inserted here]
-        </div>
-        <div id="aside">
-            <p>PicketLink Angular.js example</p>
-            <ul>
-                <li><a href="https://www.jboss.org/picketlink">Official PicketLink web site</a></li>
-                <li><a href="http://red.ht/jbeap-6">Product Information</a></li>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="#">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
-            <p>Learn more about JBoss AS 7.</p>
-            <ul>
-                <li><a
-                    href="http://www.jboss.org/jdf/quickstarts/jboss-as-quickstart/guide/Introduction">Getting
-                        Started Developing Applications Guide</a></li>
-                <li><a href="http://jboss.org/jbossas">Community
-                        Project Information</a></li>
-            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+
+<div class="starter-template">
+    <div ng-controller="MessageCtrl">
+        <div id="messages" class="check-element animate-show" ng-show="hasMessages()">
+            <h3>Server is telling you that:
+                <p>
+                    <strong>
+                        <ul>
+                            <li ng-repeat="message in messages">
+                                {{message}}
+                            </li>
+                        </ul>
+                    </strong>
+                </p>
+            </h3>
+            <button ng-click="clearMessages()" class="btn">Clear</button>
         </div>
-        <footer id="footer">
-            <p>
-                This project was generated from a Maven archetype from
-                JBoss.<br />
-            </p>
-        </footer>
-    </aside>
+    </div>
+    <div id="content" ng-view/>
+</div>
+<script src="js/libs/bootstrap/jquery.min.js"></script>
+<script src="js/libs/bootstrap/bootstrap.min.js"></script>
 </body>
 </html>
