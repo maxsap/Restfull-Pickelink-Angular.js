@@ -56,9 +56,9 @@ var appModule = angular.module('PLAngular',
 		'request' : function(config) {
 		    var token = sessionStorage.getItem('token');
 
-            if(token != null && token != '') {
-                config.headers['x-session-token'] = token;
-            }
+                    if(token != null && token != '') {
+                        config.headers['x-session-token'] = token;
+                    }
 
 			// XXX Token validation should be here
 		    return config || $q.when(config);
