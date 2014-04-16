@@ -21,4 +21,9 @@ public class StringResourceProducer {
 	public String getWildcardResource() {
 		return "*";
 	}
+	
+	@Produces @Named("ACTIVATION_CODE_ATTRIBUTE_NAME")
+	public String getActivatinAttribute() {
+		return "ActivationCode";
+	}
 }

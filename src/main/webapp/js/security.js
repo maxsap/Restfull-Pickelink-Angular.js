@@ -87,11 +87,13 @@ angular.module('PicketLinkSecurity', ['ngResource', 'ngRoute']).config(
 // controllers definition
 function LoginCtrl($scope, SessionResource, SecurityService, $location) {
     $scope.newUser = {};
+    $scope.isLoggedIn = false;
 
     $scope.login = function() {
         if ($scope.newUser.userId != undefined && $scope.newUser.password != undefined) {
             SessionResource.login($scope.newUser,
                 function (data) {
+        	    $scope.isLoggedIn = true;
                     SecurityService.initSession(data);
                     $location.path( "/home" );
                 }
@@ -103,11 +105,6 @@ function LoginCtrl($scope, SessionResource, SecurityService, $location) {
         $location.path( "/signup" );
     };
 
-    $scope.reset = function() {
-        $scope.newUser = {};
-    };
-
-    $scope.reset();
 }
 
 function SignupCtrl($scope, $http, RegistrationResource, $q, $location, $timeout) {
@@ -127,6 +124,7 @@ function ActivationCtrl($scope, $routeParams, RegistrationResource, SecurityServ
     var ac = $routeParams.activationCode;
     $scope.activate = function() {
         RegistrationResource.activation(JSON.stringify(ac), function(data) {
+            $scope.isLoggedIn = true;
             SecurityService.initSession(data);
             $location.path( "/login" );
         }, function(result) {

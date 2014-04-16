@@ -74,7 +74,9 @@ import com.gr.project.security.model.Registration;
 @Path("/register")
 public class RegistrationService {
 
-    public static final String ACTIVATION_CODE_ATTRIBUTE_NAME = "ActivationCode";
+    @Inject
+    @Named("ACTIVATION_CODE_ATTRIBUTE_NAME")
+    private String ACTIVATION_CODE_ATTRIBUTE_NAME;
 
     @Inject
     @Named("default.return.message.parameter")
@@ -177,35 +179,22 @@ public class RegistrationService {
 
         this.identityManager.updateCredential(newUser, password);
         
-        /////////////////////////////////////////////////////////////////////////////////////////
-        Role adminRole = new Role(ApplicationRole.ADMINISTRATOR.toString());
+        // Assign a group to the newly created user
+        
+        Role userRole = new Role(ApplicationRole.USER.toString());
 
-        // stores the admin role
-        identityManager.add(adminRole);
 
-        Group adminGroup = new Group("Administrators");
+        Group userGroup = new Group("Users");
 
-        // stores the admin group
-        identityManager.add(adminGroup);
 
         RelationshipManager relationshipManager = this.partitionManager.createRelationshipManager();
 
-        // grants to the admin user the admin role
-        BasicModel.grantRole(relationshipManager, newUser, adminRole);
+        // grants to the user user the user role
+        BasicModel.grantRole(relationshipManager, newUser, userRole);
         
-        // add the admin user to the admin group
-        BasicModel.addToGroup(relationshipManager, newUser, adminGroup);
+        // add the user to the user group
+        BasicModel.addToGroup(relationshipManager, newUser, userGroup);
         
-        Role userRole = new Role("User");
-        
-        identityManager.add(userRole);
-        
-        Group usersGroup = new Group("Users");
-        
-        identityManager.add(usersGroup);
-        
-        //////////////////////////////////////////////////////////////////////////////////////////
-
         return activationCode;
     }
 

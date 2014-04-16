@@ -20,6 +20,7 @@ import com.gr.project.security.authorization.AllowedRole;
 import com.gr.project.security.authorization.annotation.UserLoggedIn;
 import com.gr.project.security.model.ApplicationRole;
 import com.gr.project.security.model.MyUser;
+import com.gr.project.util.EntityValidator;
 
 @javax.ejb.Stateless
 @Path("/admin")
@@ -36,6 +37,9 @@ public class AdminService {
 
     @Inject
     private IdentityManager identityManager;
+    
+    @Inject
+    private EntityValidator validator;
 
     
     @POST
@@ -45,8 +49,12 @@ public class AdminService {
     	
         MessageBuilder message;
         try {
-            MyUser user = findUserByUserName(passedUser.getEmail());
-
+        	
+        	// validate input
+        	validator.validateEntity(passedUser);
+            
+        	MyUser user = findUserByUserName(passedUser.getEmail());
+            
             if (user == null) {
                 return MessageBuilder.badRequest().message("Invalid activation code.").build();
             }

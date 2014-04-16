@@ -25,6 +25,7 @@ public enum ApplicationRole {
 
     PROJECT_MANAGER,
     DEVELOPER,
-    ADMINISTRATOR;
+    ADMINISTRATOR,
+    USER;
 
 }
