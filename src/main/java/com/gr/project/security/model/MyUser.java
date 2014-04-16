@@ -21,23 +21,44 @@
  */
 package com.gr.project.security.model;
 
+import com.gr.project.model.Person;
 import org.picketlink.idm.model.AbstractIdentityType;
 import org.picketlink.idm.model.Account;
+import org.picketlink.idm.model.Attribute;
 import org.picketlink.idm.model.annotation.AttributeProperty;
+import org.picketlink.idm.model.annotation.Unique;
+import org.picketlink.idm.query.AttributeParameter;
 import org.picketlink.idm.query.QueryParameter;
 
-import com.gr.project.model.Person;
-
 /**
+ * <p>This is a custom {@link org.picketlink.idm.model.Account} type to represent the application users.</p>
+ *
+ * <p>Instead of using the {@link org.picketlink.idm.model.basic.User} type provided by PicketLink the application is using its
+ * own type to map users to/from the configured identity stores.</p>
+ *
+ * <p>This is a perfect example about how to integrate PicketLink IDM with existing models. The <code>person</code> association
+ * is basically a link between application's data model with the identity model provided by PicketLink.</p>
+ *
  * @author Pedro Igor
  */
 public class MyUser extends AbstractIdentityType implements Account {
 
 	private static final long serialVersionUID = 1L;
 
+    private static final String ACTIVATION_CODE_ATTRIBUTE_NAME = "ActivationCode";
+
+    /**
+     * <p>Can be used to query users by their activation code.</p>
+     */
+    public static final AttributeParameter ACTIVATION_CODE = QUERY_ATTRIBUTE.byName(ACTIVATION_CODE_ATTRIBUTE_NAME);
+
+    /**
+     * <p>Can be used to query users by their login name.</p>
+     */
 	public static final QueryParameter USER_NAME = QUERY_ATTRIBUTE.byName("loginName");
 
     @AttributeProperty
+    @Unique
     private String loginName;
 
     @AttributeProperty
@@ -65,5 +86,23 @@ public class MyUser extends AbstractIdentityType implements Account {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public void setActivationCode(String activationCode) {
+        setAttribute(new Attribute<String>(ACTIVATION_CODE_ATTRIBUTE_NAME, activationCode));
+    }
+
+    public void invalidateActivationCode() {
+        removeAttribute(ACTIVATION_CODE_ATTRIBUTE_NAME);
+    }
+
+    public String getActivationCode() {
+        Attribute<String> attribute = getAttribute(ACTIVATION_CODE_ATTRIBUTE_NAME);
+
+        if (attribute == null) {
+            return null;
+        }
+
+        return attribute.getValue();
     }
 }

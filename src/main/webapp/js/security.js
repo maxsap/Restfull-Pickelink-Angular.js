@@ -38,7 +38,7 @@ angular.module('PicketLinkSecurity', ['ngResource', 'ngRoute']).config(
     }])
      .factory('AdminResource', ['$resource', function($resource) {
         return $resource('rest/admin/:dest', {}, {
-            activate: {method: 'POST', params: {dest:"activate"}},
+            activate: {method: 'POST', params: {dest:"activate"}}
         });
     }])
     .factory('UsersResource', ['$resource', function($resource) {
@@ -124,7 +124,6 @@ function ActivationCtrl($scope, $routeParams, RegistrationResource, SecurityServ
     var ac = $routeParams.activationCode;
     $scope.activate = function() {
         RegistrationResource.activation(JSON.stringify(ac), function(data) {
-            $scope.isLoggedIn = true;
             SecurityService.initSession(data);
             $location.path( "/login" );
         }, function(result) {
