@@ -23,15 +23,13 @@
 package com.gr.project.security.service;
 
 import com.gr.project.rest.MessageBuilder;
-import com.gr.project.security.authentication.credential.TokenCredentialStorage;
+import com.gr.project.security.model.IdentityModelManager;
 import org.picketlink.Identity;
 import org.picketlink.authentication.LockedAccountException;
 import org.picketlink.credential.DefaultLoginCredentials;
-import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.model.Account;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -47,15 +45,11 @@ import javax.ws.rs.core.Response;
 public class AuthenticationService {
 
     @Inject
-    @Named("default.return.message.parameter")
-    private String MESSAGE_RESPONSE_PARAMETER;
-
-    @Inject
     @Identity.Stateless
     private Identity identity;
 
     @Inject
-    private IdentityManager identityManager;
+    private IdentityModelManager identityModelManager;
 
     @Inject
     private DefaultLoginCredentials credentials;
@@ -86,7 +80,7 @@ public class AuthenticationService {
     }
 
     private Response returnToken(Account account) {
-        TokenCredentialStorage credentialStorage = this.identityManager.retrieveCurrentCredential(account, TokenCredentialStorage.class);
-        return MessageBuilder.ok().token(credentialStorage.getToken()).build();
+        String token = this.identityModelManager.getToken(account);
+        return MessageBuilder.ok().token(token).build();
     }
 }

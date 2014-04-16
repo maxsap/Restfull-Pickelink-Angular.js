@@ -21,7 +21,13 @@
  */
 package com.gr.project.security.service;
 
-import java.util.List;
+import com.gr.project.model.Email;
+import com.gr.project.rest.MessageBuilder;
+import com.gr.project.security.authentication.credential.Token;
+import com.gr.project.security.model.IdentityModelManager;
+import com.gr.project.security.model.MyUser;
+import com.gr.project.security.model.Registration;
+import org.picketlink.idm.PartitionManager;
 
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
@@ -34,26 +40,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import org.picketlink.idm.IdentityManager;
-import org.picketlink.idm.PartitionManager;
-import org.picketlink.idm.RelationshipManager;
-import org.picketlink.idm.credential.Password;
-import org.picketlink.idm.model.Attribute;
-import org.picketlink.idm.model.IdentityType;
-import org.picketlink.idm.model.basic.BasicModel;
-import org.picketlink.idm.model.basic.Group;
-import org.picketlink.idm.model.basic.Role;
-import org.picketlink.idm.query.IdentityQuery;
-
-import com.gr.project.model.Email;
-import com.gr.project.model.Person;
-import com.gr.project.rest.MessageBuilder;
-import com.gr.project.security.authentication.TokenManager;
-import com.gr.project.security.authentication.credential.Token;
-import com.gr.project.security.model.ApplicationRole;
-import com.gr.project.security.model.MyUser;
-import com.gr.project.security.model.Registration;
 
 /**
  * <p>RESTFul endpoint responsible for:</p>
@@ -74,18 +60,13 @@ import com.gr.project.security.model.Registration;
 @Path("/register")
 public class RegistrationService {
 
-    public static final String ACTIVATION_CODE_ATTRIBUTE_NAME = "ActivationCode";
-
     @Inject
     @Named("default.return.message.parameter")
     private String MESSAGE_RESPONSE_PARAMETER;
 
     @Inject
-    private IdentityManager identityManager;
+    private IdentityModelManager identityModelManager;
 
-    @Inject
-    private TokenManager tokenManager;
-    
     @Inject
     private PartitionManager partitionManager;
 
@@ -104,8 +85,9 @@ public class RegistrationService {
 
         try {
             // if there is no user with the provided e-mail, perform registration
-            if (findUserByLoginName(request.getEmail()) == null) {
-                String activationCode = createAccount(request);
+            if (this.identityModelManager.findByLoginName(request.getEmail()) == null) {
+                MyUser newUser = this.identityModelManager.createAccount(request);
+                String activationCode = newUser.getActivationCode();
 
                 sendNotification(request, activationCode);
 
@@ -127,121 +109,13 @@ public class RegistrationService {
         MessageBuilder message;
 
         try {
-            MyUser user = findUserByActivationCode(activationCode);
-
-            if (user == null) {
-                return MessageBuilder.badRequest().message("Invalid activation code.").build();
-            }
-
-            user.setEnabled(true);
-            user.removeAttribute(ACTIVATION_CODE_ATTRIBUTE_NAME);
-
-            this.identityManager.update(user);
-
-            Token token = this.tokenManager.issue(user);
-
-            this.identityManager.updateCredential(user, token);
-
+            Token token = this.identityModelManager.activateAccount(activationCode);
             message = MessageBuilder.ok().token(token.getToken());
         } catch (Exception e) {
             message = MessageBuilder.badRequest().message(e.getMessage());
         }
 
         return message.build();
-    }
-
-    private String createAccount(Registration request) {
-        if (!request.isValid()) {
-            throw new IllegalArgumentException("Insuficient information.");
-        }
-
-        Person person = new Person();
-
-        person.setEmail(request.getEmail());
-        person.setFirstName(request.getFirstName());
-        person.setLastName(request.getLastName());
-
-        MyUser newUser = new MyUser(request.getEmail());
-
-        newUser.setPerson(person);
-        newUser.setEnabled(false); // by default, user is disabled until the account is activated.
-
-//        String activationCode = UUID.randomUUID().toString();
-        String activationCode = "12345"; // testing purposes
-
-        newUser.setAttribute(new Attribute<String>(ACTIVATION_CODE_ATTRIBUTE_NAME, activationCode)); // we set an activation code for future use.
-
-        this.identityManager.add(newUser);
-
-        Password password = new Password(request.getPassword());
-
-        this.identityManager.updateCredential(newUser, password);
-        
-        /////////////////////////////////////////////////////////////////////////////////////////
-        Role adminRole = new Role(ApplicationRole.ADMINISTRATOR.toString());
-
-        // stores the admin role
-        identityManager.add(adminRole);
-
-        Group adminGroup = new Group("Administrators");
-
-        // stores the admin group
-        identityManager.add(adminGroup);
-
-        RelationshipManager relationshipManager = this.partitionManager.createRelationshipManager();
-
-        // grants to the admin user the admin role
-        BasicModel.grantRole(relationshipManager, newUser, adminRole);
-        
-        // add the admin user to the admin group
-        BasicModel.addToGroup(relationshipManager, newUser, adminGroup);
-        
-        Role userRole = new Role("User");
-        
-        identityManager.add(userRole);
-        
-        Group usersGroup = new Group("Users");
-        
-        identityManager.add(usersGroup);
-        
-        //////////////////////////////////////////////////////////////////////////////////////////
-
-        return activationCode;
-    }
-
-    public MyUser findUserByActivationCode(String activationCode) {
-        if (activationCode == null) {
-            throw new IllegalArgumentException("Invalid activation code.");
-        }
-
-        IdentityQuery<MyUser> query = this.identityManager.createIdentityQuery(MyUser.class);
-        List<MyUser> result = query
-            .setParameter(IdentityType.QUERY_ATTRIBUTE.byName(ACTIVATION_CODE_ATTRIBUTE_NAME), activationCode.replaceAll("\"", ""))
-            .getResultList();
-
-        if (!result.isEmpty()) {
-            return result.get(0);
-        }
-
-        return null;
-    }
-
-    private MyUser findUserByLoginName(String loginName) {
-        if (loginName == null) {
-            throw new IllegalArgumentException("Invalid login name.");
-        }
-
-        IdentityQuery<MyUser> query = this.identityManager.createIdentityQuery(MyUser.class);
-
-        query.setParameter(MyUser.USER_NAME, loginName);
-
-        List<MyUser> result = query.getResultList();
-
-        if (!result.isEmpty()) {
-            return result.get(0);
-        }
-
-        return null;
     }
 
     private void sendNotification(Registration request, String activationCode) {

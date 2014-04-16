@@ -19,40 +19,33 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
+package com.gr.project.security;
 
-package com.gr.project.security.service;
-
-import com.gr.project.security.authorization.annotation.UserLoggedIn;
 import com.gr.project.security.model.IdentityModelManager;
-import org.picketlink.Identity;
-import org.picketlink.idm.model.Account;
 
-import javax.ejb.Stateless;
+import javax.annotation.PostConstruct;
+import javax.ejb.Singleton;
+import javax.ejb.Startup;
 import javax.inject.Inject;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
+
+import static com.gr.project.security.model.ApplicationRole.ADMINISTRATOR;
 
 /**
+ * <p>Initializes the identity stores with some default users and roles.</p>
  *
+ * @author Pedro Igor
  */
-@Stateless
-@Path("/logout")
-public class LogoutService {
+@Startup
+@Singleton
+public class IdentityManagementInitializer {
 
     @Inject
     private IdentityModelManager identityModelManager;
 
-    @Inject
-    @Identity.Stateless
-    private Identity identity;
-
-    @POST
-    @UserLoggedIn
-    public void logout() {
-        Account account = this.identity.getAccount();
-
-        this.identityModelManager.issueToken(account);
-
-        this.identity.logout();
+    @PostConstruct
+    public void init() {
+        this.identityModelManager.createRole(ADMINISTRATOR);
+        this.identityModelManager.createAdminAccount();
     }
+
 }
