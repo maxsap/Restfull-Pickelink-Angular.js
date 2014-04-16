@@ -21,15 +21,15 @@
  */
 package com.gr.project.security;
 
-import static com.gr.project.security.model.ApplicationRole.ADMINISTRATOR;
-import static com.gr.project.security.model.ApplicationRole.USER;
+import com.gr.project.security.model.IdentityModelManager;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.inject.Inject;
 
-import com.gr.project.security.model.IdentityModelManager;
+import static com.gr.project.security.model.ApplicationRole.ADMINISTRATOR;
+import static com.gr.project.security.model.ApplicationRole.USER;
 
 
 /**
@@ -46,12 +46,8 @@ public class IdentityManagementInitializer {
 
     @PostConstruct
     public void init() {
-    	if(this.identityModelManager.getRole(ADMINISTRATOR) == null)
-    		this.identityModelManager.createRole(ADMINISTRATOR);
-        
-        if(this.identityModelManager.getRole(USER) == null)
-        	this.identityModelManager.createRole(USER);
-        
+        this.identityModelManager.createRole(ADMINISTRATOR);
+        this.identityModelManager.createRole(USER);
         this.identityModelManager.createAdminAccount();
     }
 
