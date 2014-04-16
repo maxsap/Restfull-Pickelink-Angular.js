@@ -21,14 +21,13 @@
  */
 package com.gr.project.rest;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * @author Pedro Igor
@@ -52,6 +51,14 @@ public class MessageBuilder {
 
     public static MessageBuilder ok() {
         return new MessageBuilder(Response.ok());
+    }
+
+    public static MessageBuilder authenticationRequired() {
+        return new MessageBuilder(Response.status(Response.Status.UNAUTHORIZED));
+    }
+
+    public static MessageBuilder accessDenied() {
+        return new MessageBuilder(Response.status(Response.Status.FORBIDDEN));
     }
 
     @SuppressWarnings("unchecked")

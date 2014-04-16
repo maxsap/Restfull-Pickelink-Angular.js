@@ -23,8 +23,6 @@ package com.gr.project.security.model;
  */
 public enum ApplicationRole {
 
-    PROJECT_MANAGER,
-    DEVELOPER,
     ADMINISTRATOR;
 
 }
