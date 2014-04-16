@@ -1,5 +1,7 @@
 package com.gr.project.util;
 
+import org.picketlink.annotations.PicketLink;
+
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 import javax.persistence.EntityManager;
@@ -28,7 +30,12 @@ public class Resources {
    @PersistenceContext
    private EntityManager em;
 
-   /**
+    @PersistenceContext
+    @Produces
+    @PicketLink
+    private EntityManager entityManager;
+
+    /**
     * Provider injectable loggers based around Java Util Logging.
     * @param injectionPoint
     * @return
@@ -37,14 +44,4 @@ public class Resources {
    public Logger produceLog(InjectionPoint injectionPoint) {
       return Logger.getLogger(injectionPoint.getMember().getDeclaringClass().getName());
    }
- 
-//   @Produces @DataDir
-//   public String getDataDir() {
-//       String openshiftDataDir = System.getenv("OPENSHIFT_DATA_DIR");
-//       if (openshiftDataDir != null) {
-//           return openshiftDataDir;
-//       } else {
-//           return "";
-//       }
-//   }
 }
