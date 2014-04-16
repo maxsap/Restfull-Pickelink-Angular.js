@@ -19,36 +19,28 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security.model.entity;
 
-import com.gr.project.security.authentication.credential.TokenCredentialStorage;
-import org.picketlink.idm.jpa.annotations.CredentialProperty;
-import org.picketlink.idm.jpa.annotations.entity.ManagedCredential;
-import org.picketlink.idm.jpa.model.sample.simple.AbstractCredentialTypeEntity;
+package com.gr.project.security.authorization.annotation;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import org.apache.deltaspike.security.api.authorization.SecurityBindingType;
+
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.*;
 
 /**
- * <p>{@link javax.persistence.Entity} representing a {@link com.gr.project.security.authentication.credential.Token}.</p>
+ * <p>You can use this {@link Annotation} in types and methods in order to accept invocations from authenticated users, only.</p>
+ * 
+ * @author Pedro Silva
  *
- * @author Pedro Igor
  */
-@ManagedCredential(TokenCredentialStorage.class)
-@Entity
-public class TokenCredentialTypeEntity extends AbstractCredentialTypeEntity {
+@Target(value={TYPE,METHOD})
+@Retention(value=java.lang.annotation.RetentionPolicy.RUNTIME)
+@SecurityBindingType
+@Documented
+public @interface UserLoggedIn {
 
-	private static final long serialVersionUID = 3208265179514358055L;
-
-	@CredentialProperty
-    @Column(columnDefinition = "TEXT")
-    private String token;
-
-    public String getToken() {
-        return this.token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

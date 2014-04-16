@@ -19,36 +19,44 @@
  * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  */
-package com.gr.project.security.model.entity;
 
-import com.gr.project.security.authentication.credential.TokenCredentialStorage;
-import org.picketlink.idm.jpa.annotations.CredentialProperty;
-import org.picketlink.idm.jpa.annotations.entity.ManagedCredential;
-import org.picketlink.idm.jpa.model.sample.simple.AbstractCredentialTypeEntity;
+package com.gr.project.security.service;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
+import com.gr.project.security.authentication.TokenManager;
+import com.gr.project.security.authorization.annotation.UserLoggedIn;
+import org.picketlink.Identity;
+import org.picketlink.idm.IdentityManager;
+import org.picketlink.idm.model.Account;
+
+import javax.ejb.Stateless;
+import javax.inject.Inject;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 
 /**
- * <p>{@link javax.persistence.Entity} representing a {@link com.gr.project.security.authentication.credential.Token}.</p>
  *
- * @author Pedro Igor
  */
-@ManagedCredential(TokenCredentialStorage.class)
-@Entity
-public class TokenCredentialTypeEntity extends AbstractCredentialTypeEntity {
+@Stateless
+@Path("/logout")
+public class LogoutService {
 
-	private static final long serialVersionUID = 3208265179514358055L;
+    @Inject
+    private IdentityManager identityManager;
 
-	@CredentialProperty
-    @Column(columnDefinition = "TEXT")
-    private String token;
+    @Inject
+    private TokenManager tokenManager;
 
-    public String getToken() {
-        return this.token;
-    }
+    @Inject
+    @Identity.Stateless
+    private Identity identity;
 
-    public void setToken(String token) {
-        this.token = token;
+    @POST
+    @UserLoggedIn
+    public void logout() {
+        Account account = this.identity.getAccount();
+
+        this.identityManager.updateCredential(account, this.tokenManager.issue(account));
+
+        this.identity.logout();
     }
 }

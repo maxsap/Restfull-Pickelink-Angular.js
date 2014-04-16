@@ -2,7 +2,7 @@
 
 var angularLocalStorage = angular.module('LocalStorageModule', []);
 
-// You should set a prefix to avoid overwriting any local storage variables from the rest of your app
+// You should set a prefix to avoid overwriting any local storage variables from the service of your app
 // e.g. angularLocalStorage.constant('prefix', 'youAppName');
 angularLocalStorage.constant('prefix', 'ls');
 // Cookie options (usually in case of fallback)

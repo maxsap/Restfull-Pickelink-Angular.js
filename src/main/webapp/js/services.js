@@ -24,68 +24,23 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
 
   return Product;
 }])
-.factory('SessionResource', ['$resource', function($resource) {
+.factory('MessageService', ['$rootScope', function($rootScope) {
+    $rootScope.messages = [];
 
-    return $resource('rest/session/:dest', {}, {
-  	login: {method: 'POST', params: {dest:"login"}},
-  	logout: {method: 'POST', params: {dest:"logout"}}
-    });
-
-    return resource;
-  }])
-.factory('UsersResource', ['$resource', function($resource) {
-
-  // Easy way to template urls and reuse them later
-  return $resource('rest/users/:dest', {}, {
-	registration: {method: 'POST', params: {dest:"registration"}},
-	activation: {method: 'POST', params: {dest:"activation"}}
-  });
-
-  return resource;
-}])
-// Define the object to hold user state on the client
-.factory('UserService', [function () {
-    var sdo = {
-        isLogged: false,
-        username: '',
-        code:"",
-        token:"",
-        state:"",
-        expires:""
-    };
-    return sdo;
-}]);
-	
-angular.module("SignatureUtil", [])
-.service("SignatureUtil", function() {
-    var jws = function() {
-	    var hmacKey = "hmackey";
-
-        this.generateSignature = function(joeStr, hs256) {
-
-            var token = new jwt.WebToken(joeStr, hs256);
-            var signed = token.serialize(hmacKey)
-            var split = signed.split("\.")
-
-            return split;
+    var MessageService = function() {
+        this.setMessages = function(messages) {
+            console.log(messages);
+            $rootScope.messages = messages;
         };
 
-        this.verifySignature = function(signature) {
-            var token = jwt.WebTokenParser.parse(signature);
-            return token.verify(hmacKey);
-        };
+        this.hasMessages = function() {
+            return $rootScope.messages && $rootScope.messages.length > 0;
+        }
 
-        this.getClaims = function(jwsEncoded) {
-            console.log("claims:" + jwsEncoded.split(".")[1]);
-            var claims = atob(jwsEncoded.split(".")[1]);
-            console.log(claims);
-            return claims;
-        };
-    }
-
-    return {
-        getInstance: function () {
-          return new jws();
+        this.clearMessages = function() {
+            $rootScope.messages = [];
         }
     };
-});
+
+    return new MessageService();
+}])
