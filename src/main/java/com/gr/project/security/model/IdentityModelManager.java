@@ -37,6 +37,7 @@ import javax.inject.Inject;
 import java.util.List;
 
 import static com.gr.project.security.model.ApplicationRole.ADMINISTRATOR;
+import static org.picketlink.idm.model.basic.BasicModel.hasRole;
 
 /**
  * <p>This class provides an abstraction point to the Identity Management operations required by the application./p>
@@ -104,9 +105,10 @@ public class IdentityModelManager {
         MyUser newUser = new MyUser(request.getEmail());
 
         newUser.setPerson(person);
-        newUser.setEnabled(false); // by default, user is disabled until the account is activated.
 
-        //        String activationCode = UUID.randomUUID().toString();
+        disableAccount(newUser);
+
+        // String activationCode = UUID.randomUUID().toString();
         String activationCode = "12345"; // testing purposes
 
         newUser.setActivationCode(activationCode); // we set an activation code for future use.
@@ -214,4 +216,29 @@ public class IdentityModelManager {
         return role;
     }
 
+    public void disableAccount(MyUser user) {
+        if (hasRole(this.relationshipManager, user, getRole(ADMINISTRATOR))) {
+            throw new IllegalArgumentException("Administrators can not be disabled.");
+        }
+
+        user.setEnabled(false);
+
+        if (user.getId() != null) {
+            issueToken(user); // we invalidate the current token and create a new one. so any token stored by clients will be no longer valid.
+            this.identityManager.update(user);
+        }
+    }
+
+    public void enableAccount(MyUser user) {
+        if (hasRole(this.relationshipManager, user, getRole(ADMINISTRATOR))) {
+            throw new IllegalArgumentException("Administrators can not be enabled.");
+        }
+
+        user.setEnabled(true);
+        user.invalidateActivationCode();
+
+        if (user.getId() != null) {
+            this.identityManager.update(user);
+        }
+    }
 }
