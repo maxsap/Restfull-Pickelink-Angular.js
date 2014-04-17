@@ -54,7 +54,7 @@ import com.gr.project.security.model.Registration;
  *
  * <p>
  *  After a successful registration, an account is always disabled. In order to enable the account and be able to log in,
- *  the activation code must be used to invoke the <code>activateAccount</code> resource.
+ *  the activation code must be used to invoke the <code>enableAccount</code> resource.
  * </p>
  *
  * @author Pedro Igor

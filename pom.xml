@@ -19,7 +19,7 @@
 		<maven.build.timestamp.format>yyyyMMdd'T'HHmmss</maven.build.timestamp.format>
 		<jboss.bom.version>1.0.7.CR8</jboss.bom.version>
         <!-- PicketLink BOM version-->
-        <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
+        <version.picketlink.javaee.bom>2.6.0.CR2</version.picketlink.javaee.bom>
 	</properties>
 	<dependencyManagement>
 		<dependencies>

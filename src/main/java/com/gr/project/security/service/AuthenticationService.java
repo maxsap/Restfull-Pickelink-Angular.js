@@ -24,6 +24,7 @@ package com.gr.project.security.service;
 
 import com.gr.project.rest.MessageBuilder;
 import com.gr.project.security.model.IdentityModelManager;
+import com.gr.project.security.model.MyUser;
 import org.picketlink.Identity;
 import org.picketlink.authentication.LockedAccountException;
 import org.picketlink.credential.DefaultLoginCredentials;
@@ -57,6 +58,8 @@ public class AuthenticationService {
     @POST
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(@NotNull DefaultLoginCredentials credential) {
+        MyUser account = null;
+
         try {
             if (!this.identity.isLoggedIn()) {
                 this.credentials.setUserId(credential.getUserId());
@@ -65,7 +68,7 @@ public class AuthenticationService {
                 this.identity.login();
             }
 
-            Account account = this.identity.getAccount();
+            account = (MyUser) this.identity.getAccount();
 
             if (account != null) {
                 return returnToken(account);
@@ -73,7 +76,13 @@ public class AuthenticationService {
 
             return MessageBuilder.badRequest().message("Invalid credentials.").build();
         } catch (LockedAccountException laex) {
-            return MessageBuilder.badRequest().message("Your account is not activated. Check your email for the activation code.").build();
+            account = this.identityModelManager.findByLoginName(credential.getUserId());
+
+            if (account.getActivationCode() != null) {
+                return MessageBuilder.badRequest().message("Your account is not activated. Check your email for the activation code.").build();
+            } else {
+                return MessageBuilder.badRequest().message("Your account is disabled.").build();
+            }
         } catch (Exception ex) {
             return MessageBuilder.badRequest().message("Unexpected error while authenticating.").build();
         }
