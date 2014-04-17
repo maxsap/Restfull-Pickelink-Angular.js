@@ -1,4 +1,4 @@
-angular.module('PicketLinkSecurity', ['ngResource', 'ngRoute']).config(
+angular.module('PicketLinkSecurityModule', ['ngResource', 'ngRoute']).config(
     [ '$routeProvider', function($routeProvider) {
         $routeProvider.when('/login', {
             templateUrl : 'partials/login.html',
@@ -87,13 +87,11 @@ angular.module('PicketLinkSecurity', ['ngResource', 'ngRoute']).config(
 // controllers definition
 function LoginCtrl($scope, SessionResource, SecurityService, $location) {
     $scope.newUser = {};
-    $scope.isLoggedIn = false;
 
     $scope.login = function() {
         if ($scope.newUser.userId != undefined && $scope.newUser.password != undefined) {
             SessionResource.login($scope.newUser,
                 function (data) {
-        	    $scope.isLoggedIn = true;
                     SecurityService.initSession(data);
                     $location.path( "/home" );
                 }

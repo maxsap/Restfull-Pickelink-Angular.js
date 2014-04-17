@@ -16,14 +16,7 @@
  */
 // Define the REST resource service, allowing us to interact with it as a high level service
 
-angular.module('productServices', ['ngResource', 'ngRoute'])
-.factory('Product', ['$resource', function($resource){
-  var Product = $resource('/api/products/:id', {  }, {
-    update: { method: 'PUT' }
-  });
-
-  return Product;
-}])
+angular.module('MessageModule', ['ngResource', 'ngRoute'])
 .factory('MessageService', ['$rootScope', function($rootScope) {
     $rootScope.messages = [];
 
@@ -43,4 +36,4 @@ angular.module('productServices', ['ngResource', 'ngRoute'])
     };
 
     return new MessageService();
-}])
+}]);

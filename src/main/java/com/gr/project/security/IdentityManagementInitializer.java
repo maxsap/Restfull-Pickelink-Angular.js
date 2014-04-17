@@ -46,11 +46,9 @@ public class IdentityManagementInitializer {
 
     @PostConstruct
     public void init() {
-    	if(this.identityModelManager.getRole(ADMINISTRATOR) == null)
-    		this.identityModelManager.createRole(ADMINISTRATOR);
-        
-        if(this.identityModelManager.getRole(USER) == null)
-        	this.identityModelManager.createRole(USER);
+		this.identityModelManager.createRole(ADMINISTRATOR);
+    
+    	this.identityModelManager.createRole(USER);
         
         this.identityModelManager.createAdminAccount();
     }
