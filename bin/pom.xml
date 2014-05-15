@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>antitheft</groupId>
-	<artifactId>antitheft</artifactId>
-	<version>1.0</version>
+	<groupId>Project</groupId>
+	<artifactId>Project</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>antitheft</name>
-	<description>Skeleton for Antitheft</description>
+	<name>Project</name>
+	<description>Skeleton for Angular java ee application</description>
 
 	<properties>
 		<buildhelper.plugin.version>1.7</buildhelper.plugin.version>
@@ -19,8 +19,9 @@
 		<maven.build.timestamp.format>yyyyMMdd'T'HHmmss</maven.build.timestamp.format>
 		<jboss.bom.version>1.0.7.CR8</jboss.bom.version>
         <!-- PicketLink BOM version-->
-        <version.picketlink.javaee.bom>2.6.0.CR2</version.picketlink.javaee.bom>
+        <version.picketlink.javaee.bom>2.6.0-SNAPSHOT</version.picketlink.javaee.bom>
 	</properties>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -74,6 +75,7 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
 	<dependencies>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
@@ -151,11 +153,6 @@
 		<dependency>
 			<groupId>org.picketlink</groupId>
 			<artifactId>picketlink-idm-simple-schema</artifactId>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.picketlink</groupId>
-			<artifactId>picketlink-json</artifactId>
 			<scope>compile</scope>
 		</dependency>
 
@@ -474,5 +471,4 @@
             </releases>
         </repository>
     </repositories>
->>>>>>> 223ea077e4c1b17cb75a66618c6114b3ab78dd3a
 </project>
