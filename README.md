@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-The OpenShift `jbossas` cartridge documentation can be found at:
-
-https://github.com/openshift/origin-server/tree/master/cartridges/openshift-origin-cartridge-jbossas/README.md
-=======
 Restfull-Pickelink-Angular.js
 =============================
 
@@ -150,4 +145,3 @@ The final one should be like this one :
 			<remote-destination host="smtp.gmail.com" port="465"/>
 		</outbound-socket-binding>
 	</socket-binding-group>
->>>>>>> 223ea077e4c1b17cb75a66618c6114b3ab78dd3a
