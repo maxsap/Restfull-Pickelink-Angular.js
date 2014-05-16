@@ -15,7 +15,7 @@
         http://java.sun.com/xml/ns/persistence
         http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
 	<persistence-unit name="primary">
-		<jta-data-source>java:jboss/datasources/example-ds</jta-data-source>
+		<jta-data-source>java:jboss/datasources/MySQLDS</jta-data-source>
 
         <class>com.gr.project.model.Person</class>
 
