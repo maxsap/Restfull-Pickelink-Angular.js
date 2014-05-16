@@ -2,13 +2,16 @@
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	
+	
+	
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>Project</groupId>
-	<artifactId>Project</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>antitheft</groupId>
+	<artifactId>antitheft</artifactId>
+	<version>1.0</version>
 	<packaging>war</packaging>
-	<name>Project</name>
-	<description>Skeleton for Angular java ee application</description>
+	<name>antitheft</name>
+	<description>Antitheft backend application</description>
 
 	<properties>
 		<buildhelper.plugin.version>1.7</buildhelper.plugin.version>
@@ -20,7 +23,12 @@
 		<jboss.bom.version>1.0.7.CR8</jboss.bom.version>
 		<!-- PicketLink BOM version -->
 		<version.picketlink.javaee.bom>2.6.0.CR2</version.picketlink.javaee.bom>
+		<maven.compiler.source>1.7</maven.compiler.source>
+    	<maven.compiler.target>1.7</maven.compiler.target>
 	</properties>
+	
+	
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -74,6 +82,9 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
+	
+	
 	<dependencies>
 		<dependency>
 			<groupId>javax.enterprise</groupId>
@@ -219,6 +230,9 @@
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>
+	
+	
+	
 	<build>
 		<finalName>${project.artifactId}</finalName>
 		<pluginManagement>
@@ -236,6 +250,8 @@
 					<version>2.1.1</version>
 					<configuration>
 						<packagingExcludes>**/javax/**/*.*,**/client/local/**/*.class</packagingExcludes>
+						<!-- Java EE 6 doesn't require web.xml, Maven needs to catch up! -->
+						<failOnMissingWebXml>false</failOnMissingWebXml>
 						<archive>
 							<manifestEntries>
 								<Dependencies>org.jboss.as.naming,org.jboss.as.server,org.jboss.msc</Dependencies>
@@ -414,32 +430,31 @@
 			</build>
 		</profile>
 		<profile>
-			<!-- When built in OpenShift the 'openshift' profile will be used when 
-				invoking mvn. -->
-			<!-- Use this profile for any OpenShift specific customization your app 
-				will need. -->
-			<!-- By default that is to put the resulting archive into the 'deployments' 
-				folder. -->
-			<!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
-			<id>openshift</id>
-			<build>
-				<finalName>antitheft</finalName>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-war-plugin</artifactId>
-						<version>2.3</version>
-						<configuration>
-							<failOnMissingWebXml>false</failOnMissingWebXml>
-							<outputDirectory>deployments</outputDirectory>
-							<warName>ROOT</warName>
-						</configuration>
-					</plugin>
-				</plugins>
-			</build>
+			     <!-- When built in OpenShift the 'openshift' profile will be used when invoking mvn. -->
+     <!-- Use this profile for any OpenShift specific customization your app will need. -->
+     <!-- By default that is to put the resulting archive into the 'deployments' folder. -->
+     <!-- http://maven.apache.org/guides/mini/guide-building-for-different-environments.html -->
+     <id>openshift</id>
+     <build>
+        <finalName>test</finalName>
+        <plugins>
+          <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <outputDirectory>deployments</outputDirectory>
+              		  <warName>ROOT</warName>
+                </configuration>
+            </plugin>
+        </plugins>
+      </build>
 		</profile>
 	</profiles>
 
+	
+	
 	<repositories>
 		<repository>
 			<id>jboss-public-repository-group</id>
