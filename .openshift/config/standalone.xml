@@ -38,17 +38,6 @@
                     <properties path="mgmt-groups.properties" relative-to="jboss.server.config.dir"/>
                 </authorization>
             </security-realm>
-			<security-realm name="ssl-realm">
-                <server-identities>
-                    <ssl>
-                        <keystore path="server.keystore" relative-to="jboss.server.config.dir" keystore-password="SapraM@x12345!!" alias="server" key-password="SapraM@x12345!!"/>
-                    </ssl>
-                </server-identities>
-                <authentication>
-                    <local default-user="$local"/>
-                    <properties path="mgmt-users.properties" relative-to="jboss.server.config.dir"/>
-                </authentication>
-            </security-realm>
             <security-realm name="ApplicationRealm">
                 <authentication>
                     <local default-user="$local" allowed-users="*" skip-group-loading="true"/>
