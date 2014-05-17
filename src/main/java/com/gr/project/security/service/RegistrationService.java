@@ -128,8 +128,8 @@ public class RegistrationService {
 
 
     private void sendNotification(Registration request, String activationCode) {
-//        Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode, request.getEmail());
-//
-//        event.fire(email);
+        Email email = new Email("Please complete the signup", "http://localhost:8080/Project/#/activate/" + activationCode, request.getEmail());
+
+        event.fire(email);
     }
 }
