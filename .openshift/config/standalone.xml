@@ -356,6 +356,9 @@
             <mail-session name="default" jndi-name="java:jboss/mail/Default">
                 <smtp-server outbound-socket-binding-ref="mail-smtp"/>
             </mail-session>
+			<mail-session name="App" jndi-name="java:/mail/gmail">
+                <smtp-server outbound-socket-binding-ref="mail-smtp-gmail" ssl="true" username="max.sapranidis@gmail.com" password="M@x1m0s_12#$"/>
+            </mail-session>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
             <remote-naming/>
@@ -459,6 +462,9 @@
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="localhost" port="25"/>
+        </outbound-socket-binding>
+		<outbound-socket-binding name="mail-smtp-gmail">
+            <remote-destination host="smtp.gmail.com" port="465"/>
         </outbound-socket-binding>
     </socket-binding-group>
 </server>
