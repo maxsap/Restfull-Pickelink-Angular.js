@@ -463,7 +463,7 @@
         <outbound-socket-binding name="mail-smtp">
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
-		<outbound-socket-binding name="mail-smtp-gmail">
+		<outbound-socket-binding name="mail-smtp-gmail" source-port="0" fixed-source-port="false">
             <remote-destination host="smtp.gmail.com" port="465"/>
         </outbound-socket-binding>
     </socket-binding-group>

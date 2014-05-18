@@ -25,6 +25,7 @@ import com.gr.project.security.authentication.credential.TokenCredentialHandler;
 import com.gr.project.security.model.MyUser;
 import com.gr.project.security.model.entity.MyUserTypeEntity;
 import com.gr.project.security.model.entity.TokenCredentialTypeEntity;
+
 import org.picketlink.IdentityConfigurationEvent;
 import org.picketlink.PartitionManagerCreateEvent;
 import org.picketlink.idm.PartitionManager;
@@ -46,6 +47,7 @@ import org.picketlink.internal.EEJPAContextInitializer;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -64,7 +66,8 @@ public class SecurityConfiguration {
     @Inject
     private EEJPAContextInitializer contextInitializer;
 
-    public void configureIdentityManagement(@Observes IdentityConfigurationEvent event) {
+    @SuppressWarnings("unchecked")
+	public void configureIdentityManagement(@Observes IdentityConfigurationEvent event) {
         IdentityConfigurationBuilder builder = event.getConfig();
 
         builder
