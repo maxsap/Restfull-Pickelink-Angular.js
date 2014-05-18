@@ -21,19 +21,18 @@
  */
 package com.gr.project.security.authentication;
 
-import com.gr.project.security.authentication.credential.TokenCredential;
-import org.picketlink.Identity;
+import java.io.IOException;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.servlet.FilterConfig;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.picketlink.annotations.PicketLink;
 import org.picketlink.authentication.web.HTTPAuthenticationScheme;
 import org.picketlink.credential.DefaultLoginCredentials;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Instance;
-import javax.inject.Inject;
-import javax.servlet.FilterConfig;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import com.gr.project.security.authentication.credential.TokenCredential;
 
 /**
  * <p>A custom {@link org.picketlink.authentication.web.HTTPAuthenticationScheme} that knows how to extract a header from
@@ -53,8 +52,6 @@ public class JWSAuthenticationScheme implements HTTPAuthenticationScheme {
 
     public static final String AUTHORIZATION_TOKEN_HEADER_NAME = "x-session-token";
 
-    @Inject
-    private Instance<Identity> identityInstance;
 
     @Override
     public void initialize(FilterConfig config) {
