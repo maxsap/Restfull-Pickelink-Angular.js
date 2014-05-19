@@ -64,7 +64,7 @@ angular.module('WsUtilModule', ['ngResource', 'ngRoute']).factory('WsUtilService
     
     ws.onclose = function() { 
        // websocket is closed.
-       alert("Connection is closed..."); 
+       console.log("Socket has been opened!");  
     };
 
     function sendRequest(request) {
