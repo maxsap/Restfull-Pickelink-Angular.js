@@ -25,8 +25,9 @@ public class EchoServerEncoder implements Encoder.Text<MyMessage> {
     //Makes use of the JSON Streaming API to build the JSON string.
     Json.createGenerator(writer)
             .writeStartObject()
-              .write("message", myMsg.message)
-              .write("time", myMsg.receivedAt.toString())
+              .write("message", myMsg.getType())
+              .write("time", myMsg.getReceivedAt().toString())
+              .write("callback_id", myMsg.getCallback_id())
             .writeEnd()
             .flush();
     System.out.println(writer.toString());

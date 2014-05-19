@@ -60,14 +60,22 @@ public class JWSAuthenticationScheme implements HTTPAuthenticationScheme {
 
     @Override
     public void extractCredential(HttpServletRequest request, DefaultLoginCredentials creds) {
-        String header = getTokenHader(request);
+        String header = getToken(request);
 
         if (header != null) {
             creds.setCredential(new TokenCredential(header));
         }
     }
 
-    /**
+    private String getToken(HttpServletRequest request) {
+    	String token = getTokenFromURL(request);
+    	if(token != null && !token .isEmpty())
+    		return token;
+    	
+    	return getTokenHeader(request);
+	}
+
+	/**
      * <p>We use a 401 http status code to sinalize to clients that authentication is required.</p>
      *
      * <p>We only challenge clients if the authentication failed. In other words, if there is a token in the request bu it is invalid.</p>
@@ -100,12 +108,22 @@ public class JWSAuthenticationScheme implements HTTPAuthenticationScheme {
      */
 //    @Override
     public boolean isProtected(HttpServletRequest request) {
-        return getTokenHader(request) != null;
+    	String token = getTokenFromURL(request);
+    	if(token != null && !token .isEmpty())
+    		return token != null;
+    	
+    	token = getTokenHeader(request);
+    	
+        return token != null;
     }
     
     
 
-    private String getTokenHader(HttpServletRequest request) {
+    private String getTokenFromURL(HttpServletRequest request) {
+		return request.getParameter("token");
+	}
+
+	private String getTokenHeader(HttpServletRequest request) {
         return request.getHeader(AUTHORIZATION_TOKEN_HEADER_NAME);
     }
 }

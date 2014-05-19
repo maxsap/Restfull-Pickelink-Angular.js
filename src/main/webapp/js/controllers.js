@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function HomeCtrl($scope, UsersResource, $location, SessionResource, SecurityService, AdminResource, MessageService) {
+function HomeCtrl($scope, UsersResource, $location, SessionResource, SecurityService, AdminResource, MessageService, WsUtilService) {
     
     // Define a refresh function, that updates the data from the REST service
     $scope.refresh = function() {
@@ -36,9 +36,15 @@ function HomeCtrl($scope, UsersResource, $location, SessionResource, SecuritySer
     };
     
     $scope.enableAccount = function(rowData) {
-	    AdminResource.enableAccount(rowData.user, function(resp) {
-            MessageService.setMessages(resp.message)
-	    });
+	    
+	    WsUtilService.getCustomers().then(function(data) {
+		MessageService.setMessages(data);
+    	    });
+	    
+	    
+//	    AdminResource.enableAccount(rowData.user, function(resp) {
+//		MessageService.setMessages(resp.message);
+//	    });
     };
 
     $scope.disableAccount = function(rowData) {
