@@ -222,17 +222,6 @@
 			<scope>test</scope>
 		</dependency>
 		
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.codehaus.jackson</groupId> -->
-<!-- 			<artifactId>jackson-core-asl</artifactId> -->
-<!-- 			<version>${version.jackson}</version> -->
-<!-- 		</dependency> -->
-<!-- 		<dependency> -->
-<!-- 			<groupId>org.codehaus.jackson</groupId> -->
-<!-- 			<artifactId>jackson-mapper-asl</artifactId> -->
-<!-- 			<version>${version.jackson}</version> -->
-<!-- 		</dependency> -->
-
 		<dependency>
 			<groupId>javax</groupId>
 			<artifactId>javaee-api</artifactId>
@@ -240,13 +229,6 @@
 			<scope>provided</scope>
 		</dependency>
 		
-<!-- 		<dependency> -->
-<!--             <groupId>org.atmosphere.client</groupId> -->
-<!--             <artifactId>javascript</artifactId> -->
-<!--             <version>${atmosphere-client-version}</version> -->
-<!--             <type>war</type> -->
-<!--         </dependency> -->
-        
         <dependency>
 			<groupId>org.atmosphere.client</groupId>
 			<artifactId>jquery</artifactId>
@@ -258,16 +240,6 @@
             <artifactId>atmosphere-runtime</artifactId>
             <version>${atmosphere-version}</version>
         </dependency>
-<!--         <dependency> -->
-<!-- 	        <groupId>org.atmosphere.jboss.as</groupId> -->
-<!-- 	        <artifactId>jboss-as-websockets</artifactId> -->
-<!-- 	        <version>0.5</version> -->
-<!-- 	    </dependency> -->
-<!-- 	    <dependency> -->
-<!--             <groupId>org.atmosphere</groupId> -->
-<!--             <artifactId>atmosphere-cdi</artifactId> -->
-<!--             <version>${atmosphere-cdi-version}</version> -->
-<!--         </dependency> -->
         
 	</dependencies>
 
