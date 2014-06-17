@@ -119,8 +119,17 @@ public class JWSAuthenticationScheme implements HTTPAuthenticationScheme {
     
     
 
-    private String getTokenFromURL(HttpServletRequest request) {
-		return request.getParameter("token");
+    private String getTokenFromURL(HttpServletRequest request)  {
+    	String token = request.getParameter("token");
+    	if(token != null && !token.isEmpty()) {
+//    		try {
+				return token; //URLDecoder.decode(token, "UTF-8");
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//				return null;
+//			}
+    	}
+		return null;
 	}
 
 	private String getTokenHeader(HttpServletRequest request) {

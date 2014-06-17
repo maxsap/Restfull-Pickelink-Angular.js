@@ -40,7 +40,8 @@ angular.module('MessageModule', ['ngResource', 'ngRoute'])
 
 /*
  * taken from http://clintberry.com/2013/angular-js-websocket-service/
- */                          
+ */ 
+/*
 angular.module('WsUtilModule', ['ngResource', 'ngRoute']).factory('WsUtilService', ['$q', '$rootScope', 'SecurityService', function($q, $rootScope, SecurityService) {
     // We return this object to anything injecting our service
     var Service = {};
@@ -111,3 +112,120 @@ angular.module('WsUtilModule', ['ngResource', 'ngRoute']).factory('WsUtilService
 
     return Service;
 }]);
+*/
+
+//angular.module('angular.atmosphere.chat', ['angular.atmosphere']);
+
+
+//angular.module('WsUtilModule', ['ngResource', 'ngRoute', 'angular.atmosphere']).factory('WsUtilService', ['$q', '$rootScope', 'SecurityService', 'atmosphereService', function($q, $rootScope, SecurityService, atmosphereService) {
+//    // We return this object to anything injecting our service
+//    var Service = {};
+//    // Keep all pending requests here until they get responses
+//    var callbacks = {};
+//    // Create a unique callback ID to map requests to responses
+//    var currentCallbackId = 0;
+//    
+//    var socket;
+//    
+//    var path = 'https://localhost:8443/Project/chat';
+//
+//    // We are now ready to cut the request
+//    var request = {
+//      url: path,
+//      contentType: 'application/json',
+//      logLevel: 'debug',
+//      transport: 'websocket',
+//      trackMessageLength: true,
+//      reconnectInterval: 5000,
+//      fallbackTransport: 'long-polling',
+////      headers: {"token": SecurityService.getToken()}
+//    };
+//        
+//
+//    request.onOpen = function (response) {
+//        transport = response.transport;
+//        uuid = response.request.uuid;
+//    };
+//
+//    request.onReopen = function (response) {
+//	console.log(atmosphere.util.stringifyJSON(response));
+//    };
+//
+//    request.onMessage = function (response) {
+//
+//        var message = response.responseBody;
+//        try {
+//            var json = atmosphere.util.parseJSON(message);
+//        } catch (e) {
+//            console.log('This doesn\'t look like a valid JSON: ', message);
+//            return;
+//        }
+//
+//        input.removeAttr('disabled').focus();
+//        if (json.rooms) {
+//            rooms.html($('<h2>', { text: 'Current room: ' + chatroom}));
+//
+//            var r = 'Available rooms: ';
+//            for (var i = 0; i < json.rooms.length; i++) {
+//                r += json.rooms[i] + "  ";
+//            }
+//            rooms.append($('<h3>', { text: r }))
+//        }
+//
+//        if (json.users) {
+//            var r = 'Connected users: ';
+//            for (var i = 0; i < json.users.length; i++) {
+//                r += json.users[i] + "  ";
+//            }
+//            users.html($('<h3>', { text: r }))
+//        }
+//
+//        if (json.author) {
+//            if (!logged && myName) {
+//                logged = true;
+//                status.text(myName + ': ').css('color', 'blue');
+//            } else {
+//                var me = json.author == author;
+//                var date = typeof(json.time) == 'string' ? parseInt(json.time) : json.time;
+//                addMessage(json.author, json.message, me ? 'blue' : 'black', new Date(date));
+//            }
+//        }
+//    };
+//
+//    request.onClose = function (response) {
+//        subSocket.push(atmosphere.util.stringifyJSON(response));
+//    };
+//
+//    request.onError = function (response) {
+//	console.log(atmosphere.util.stringifyJSON(response));
+//        logged = false;
+//    };
+//
+//    request.onReconnect = function (request, response) {
+//	console.log(atmosphere.util.stringifyJSON(response));
+//    };
+//
+//    subSocket = atmosphere.subscribe(request);
+//    
+//    function sendRequest(request) {
+//	var defer = $q.defer();
+//	subSocket.push(jQuery.stringifyJSON({ author: "max", message: "test" }));
+////	subSocket.push(request);
+//	return defer.promise;
+//    }
+//    
+//    // Define a "getter" for getting customer data
+//    Service.getCustomers = function() {
+//      var request = {
+//        type: "get_customers"
+//      }
+//      // Storing in a variable for clarity on what sendRequest returns
+//      var promise = sendRequest(request); 
+//      return promise;
+//    }
+//
+//    return Service;
+    
+//}]);
+
+

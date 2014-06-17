@@ -17,16 +17,18 @@
 		<buildhelper.plugin.version>1.7</buildhelper.plugin.version>
 		<jboss.home>${env.JBOSS_HOME}</jboss.home>
 		<version.jboss.bom.wfk>2.4.0-redhat-1</version.jboss.bom.wfk>
-		<version.jboss.bom.eap>6.2.0-redhat-1</version.jboss.bom.eap>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>yyyyMMdd'T'HHmmss</maven.build.timestamp.format>
-		<jboss.bom.version>1.0.7.CR8</jboss.bom.version>
+		<jboss.bom.version>1.0.7.Final</jboss.bom.version>
 		<!-- PicketLink BOM version -->
 		<version.picketlink.javaee.bom>2.6.0.CR2</version.picketlink.javaee.bom>
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
 
+		<version.guava>12.0</version.guava>
 		<version.jackson>1.9.13</version.jackson>
+		<atmosphere-client-version>[2.2.0,)</atmosphere-client-version>
+        <atmosphere-version>2.2.0-SNAPSHOT</atmosphere-version>
 	</properties>
 
 
@@ -80,7 +82,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>12.0</version>
+				<version>${version.guava}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -219,16 +221,17 @@
 			<type>pom</type>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-core-asl</artifactId>
-			<version>${version.jackson}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.jackson</groupId>
-			<artifactId>jackson-mapper-asl</artifactId>
-			<version>${version.jackson}</version>
-		</dependency>
+		
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.jackson</groupId> -->
+<!-- 			<artifactId>jackson-core-asl</artifactId> -->
+<!-- 			<version>${version.jackson}</version> -->
+<!-- 		</dependency> -->
+<!-- 		<dependency> -->
+<!-- 			<groupId>org.codehaus.jackson</groupId> -->
+<!-- 			<artifactId>jackson-mapper-asl</artifactId> -->
+<!-- 			<version>${version.jackson}</version> -->
+<!-- 		</dependency> -->
 
 		<dependency>
 			<groupId>javax</groupId>
@@ -236,6 +239,36 @@
 			<version>7.0</version>
 			<scope>provided</scope>
 		</dependency>
+		
+<!-- 		<dependency> -->
+<!--             <groupId>org.atmosphere.client</groupId> -->
+<!--             <artifactId>javascript</artifactId> -->
+<!--             <version>${atmosphere-client-version}</version> -->
+<!--             <type>war</type> -->
+<!--         </dependency> -->
+        
+        <dependency>
+			<groupId>org.atmosphere.client</groupId>
+			<artifactId>jquery</artifactId>
+			<version>${atmosphere-client-version}</version>
+			<type>war</type>
+		</dependency>
+        <dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-runtime</artifactId>
+            <version>${atmosphere-version}</version>
+        </dependency>
+<!--         <dependency> -->
+<!-- 	        <groupId>org.atmosphere.jboss.as</groupId> -->
+<!-- 	        <artifactId>jboss-as-websockets</artifactId> -->
+<!-- 	        <version>0.5</version> -->
+<!-- 	    </dependency> -->
+<!-- 	    <dependency> -->
+<!--             <groupId>org.atmosphere</groupId> -->
+<!--             <artifactId>atmosphere-cdi</artifactId> -->
+<!--             <version>${atmosphere-cdi-version}</version> -->
+<!--         </dependency> -->
+        
 	</dependencies>
 
 
@@ -466,6 +499,28 @@
 
 
 	<repositories>
+		<repository>
+            <id>oss.sonatype.org</id>
+            <url>http://oss.sonatype.org/content/repositories/releases</url>
+        </repository>
+        <repository>
+            <id>oss.sonatype.org-snapshot</id>
+            <url>http://oss.sonatype.org/content/repositories/snapshots</url>
+        </repository>
+        <repository>
+            <id>codehaus</id>
+            <name>repository.codehaus.org</name>
+            <url>http://repository.codehaus.org</url>
+        </repository>
+        <repository>
+            <id>codehaus-snapshots</id>
+            <url>http://snapshots.repository.codehaus.org</url>
+        </repository>
+        <repository>
+            <id>maven.java.net</id>
+            <url>https://maven.java.net/content/groups/public/</url>
+        </repository>
+        
 		<repository>
 			<id>jboss-public-repository-group</id>
 			<name>JBoss Public Maven Repository Group</name>
