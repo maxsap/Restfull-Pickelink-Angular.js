@@ -42,4 +42,5 @@ PutObjectStoreDirHere
 # ignore mvn-rpmbuild repo
 /.m2
 /target
-/.openshift
+# for now disable openshift
+/*.openshift
