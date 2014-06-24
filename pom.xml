@@ -240,6 +240,16 @@
             <artifactId>atmosphere-runtime</artifactId>
             <version>${atmosphere-version}</version>
         </dependency>
+        <dependency>
+			<groupId>org.atmosphere</groupId>
+			<artifactId>atmosphere-cdi</artifactId>
+			<version>${atmosphere-version}</version>
+		</dependency>
+		<dependency>
+            <groupId>org.atmosphere</groupId>
+            <artifactId>atmosphere-cdi</artifactId>
+            <version>${atmosphere-version}</version>
+        </dependency>
         
 	</dependencies>
 

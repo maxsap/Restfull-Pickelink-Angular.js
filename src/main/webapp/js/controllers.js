@@ -21,7 +21,7 @@ function HomeCtrl($scope, UsersResource, $location, SessionResource, SecuritySer
     
     var socket;
     
-    var path = 'http://localhost:8080/Project/chat';
+    var path = 'https://localhost:8443/Project/chat';
     
     var atmSocket = $.atmosphere;
 

@@ -15,10 +15,9 @@
  */
 package com.gr.project.security.service;
 
-import javax.ws.rs.Consumes;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
 
 import org.atmosphere.client.TrackMessageSizeInterceptor;
 import org.atmosphere.config.service.AtmosphereService;
@@ -31,13 +30,16 @@ import org.atmosphere.interceptor.AtmosphereResourceLifecycleInterceptor;
  * @author Jeanfrancois Arcand
  */
 @Path("/chat")
+//@Stateless
+@RequestScoped
 @AtmosphereService(
         dispatch = false,
+        listeners = {SecuredListener.class},
         interceptors = {AtmosphereResourceLifecycleInterceptor.class, TrackMessageSizeInterceptor.class},
         path = "/chat",
         servlet = "org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher")
-@Consumes("application/json")
-@Produces("application/json")
+//@Consumes("application/json")
+//@Produces("application/json")
 public class RestToAtmosphere {
 
     /**
@@ -47,7 +49,9 @@ public class RestToAtmosphere {
     @SuppressWarnings("deprecation")
 	@POST
     public void broadcast(String message) {
+    	System.out.println("edw");
         BroadcasterFactory.getDefault().lookup("/chat").broadcast(message);
     }
+    
 
 }

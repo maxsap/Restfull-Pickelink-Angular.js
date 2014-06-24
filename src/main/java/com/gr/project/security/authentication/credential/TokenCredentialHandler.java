@@ -21,7 +21,9 @@
  */
 package com.gr.project.security.authentication.credential;
 
-import com.gr.project.security.model.MyUser;
+import java.util.Date;
+import java.util.List;
+
 import org.picketlink.idm.IdentityManagementException;
 import org.picketlink.idm.IdentityManager;
 import org.picketlink.idm.credential.Credentials;
@@ -36,8 +38,7 @@ import org.picketlink.json.JsonException;
 import org.picketlink.json.jose.JWS;
 import org.picketlink.json.jose.JWSBuilder;
 
-import java.util.Date;
-import java.util.List;
+import com.gr.project.security.model.MyUser;
 
 /**
  * @author Pedro Igor

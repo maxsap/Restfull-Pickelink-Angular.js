@@ -137,6 +137,6 @@ public class RegistrationService {
     	
         Email email = new Email("Please complete the signup", myUri + "#/activate/" + activationCode, request.getEmail());
 
-        event.fire(email);
+//        event.fire(email);
     }
 }
